@@ -31,4 +31,10 @@
 *.out
 *.app
 
+#IDE
 *.vs
+
+#Compile
+ImageProcessor/x64
+ImageProcessor/ImageProcessor/x64
+ImageProcessor/ImageProcessor/Debug/
