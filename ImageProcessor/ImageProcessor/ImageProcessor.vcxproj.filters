@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Arquivos de Origem">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Arquivos de Cabeçalho">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Arquivos de Recurso">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Arquivos de Origem\App">
+      <UniqueIdentifier>{edf75718-9ba0-400b-a906-f9574048b356}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Origem\View">
+      <UniqueIdentifier>{7410c662-f749-4101-afed-936f5ae4518c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Origem\Type">
+      <UniqueIdentifier>{e50751e4-a31b-42f8-a464-28e9e87b9f4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Cabeçalho\App">
+      <UniqueIdentifier>{14bf991c-77e9-4491-95ea-33266c6e0710}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Cabeçalho\Type">
+      <UniqueIdentifier>{d299b8f7-db32-4de0-8c54-4a01552c957a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Cabeçalho\View">
+      <UniqueIdentifier>{60317d68-2630-4436-a98b-0714bb224213}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Origem\Util">
+      <UniqueIdentifier>{7f80d9e8-e135-48b2-89a7-b930237cdaab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Cabeçalho\Utils">
+      <UniqueIdentifier>{23cedc66-67e6-4193-b568-8bf9c37aece5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="App.h">
+      <Filter>Arquivos de Cabeçalho\App</Filter>
+    </ClInclude>
+    <ClInclude Include="Main.h">
+      <Filter>Arquivos de Cabeçalho\View</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFile.h">
+      <Filter>Arquivos de Cabeçalho\Type</Filter>
+    </ClInclude>
+    <ClInclude Include="FilenameUtil.h">
+      <Filter>Arquivos de Cabeçalho\Utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.cpp">
+      <Filter>Arquivos de Origem\App</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Arquivos de Origem\View</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFile.cpp">
+      <Filter>Arquivos de Origem\Type</Filter>
+    </ClCompile>
+    <ClCompile Include="FilenameUtil.cpp">
+      <Filter>Arquivos de Origem\Util</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
