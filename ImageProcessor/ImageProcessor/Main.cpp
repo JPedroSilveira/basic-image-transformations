@@ -189,6 +189,7 @@ namespace view
 
 		const int width = image.size().width;
 		const int height = image.size().height;
+		this->imageDimTextCtrl->Clear();
 		this->imageDimTextCtrl->WriteText(to_string(width) + "x" + to_string(height));
 	}
 
