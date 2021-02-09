@@ -5,6 +5,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 using namespace cv;
@@ -19,13 +20,13 @@ namespace type
         Mat get();
         void set(Mat image);
         bool empty();
-        //flip(src, dst, 1)
         void horizontalFlip();
-        //flip(src, dst, 0)
         void verticalFlip();
         void toGrayScale();
+        void quantizeGrayScaleImage(int colors);
     private:
         Mat image;
+        bool isGrayScale;
         void flip(Vec3b (*f)(Mat3b src, Mat3b dst, int row, int col));
     };
 }

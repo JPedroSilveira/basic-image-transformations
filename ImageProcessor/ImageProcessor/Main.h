@@ -5,6 +5,9 @@
 #include "Image.h"
 #include "FilenameUtil.h"
 #include "cvui.h"
+#include <iostream>  
+#include<string>  
+#include <sstream> 
 
 using namespace type;
 using namespace util;
@@ -22,8 +25,11 @@ namespace view
 		wxButton* flipHButton = nullptr;
 		wxButton* flipVButton = nullptr;
 		wxButton* grayButton = nullptr;
+		wxButton* quantizeButton = nullptr;
+		wxButton* resetButton = nullptr;
 		wxListBox* logListBox = nullptr;
 		wxTextCtrl* imageDimTextCtrl = nullptr;
+		wxSingleChoiceDialog* quantizeValueDialog = nullptr;
 		wxFileDialog* fileDialog = nullptr;
 		wxDirDialog* dirDialog = nullptr;
 		Image* originalImageFile = nullptr;
@@ -35,6 +41,8 @@ namespace view
 		void onFlipHButtonClick(wxCommandEvent& evt);
 		void onFlipVButtonClick(wxCommandEvent& evt);
 		void onGrayVButtonClick(wxCommandEvent& evt);
+		void onQuantizeButtonClick(wxCommandEvent& evt);
+		void onResetButtonClick(wxCommandEvent& evt);
 
 		void log(string log);
 		void updateOriginalImageView();

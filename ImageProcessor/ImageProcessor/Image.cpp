@@ -45,19 +45,45 @@ namespace type
         return this->image.empty();
     }
 
+    void Image::toGrayScale()
+    {
+        const Mat src = this->image;
+        Mat3b dst(src.rows, src.cols);
+        for (int row = 0; row < dst.rows; ++row)
+        {
+            for (int col = 0; col < dst.cols; ++col)
+            {
+                const Vec3b srcColors = src.at<Vec3b>(row, col);
+                const int blue = srcColors(0);
+                const int green = srcColors(1);
+                const int red = srcColors(2);
+
+                const int grayValue = 0.114 * blue + 0.587 * green + 0.299 * red;
+
+                dst.at<Vec3b>(row, col)[0] = grayValue;
+                dst.at<Vec3b>(row, col)[1] = grayValue;
+                dst.at<Vec3b>(row, col)[2] = grayValue;
+            }
+        }
+        this->image = dst;
+        this->isGrayScale = true;
+    }
+
     void Image::horizontalFlip() 
     {
-        flip(horizontalFlipFilter);
+        this->flip(horizontalFlipFilter);
     }
 
     void Image::verticalFlip() 
     {
-        flip(verticalFlipFilter);
+        this->flip(verticalFlipFilter);
     }
 
     void Image::flip(Vec3b(*func)(Mat3b src, Mat3b dst, int row, int col)) 
     {
-        const Mat3b src = image;
+        if (this->empty()) return;
+
+        const Mat3b src = this->image;
         Mat3b dst(src.rows, src.cols);
         for (int row = 0; row < dst.rows; ++row) 
         {
@@ -70,22 +96,30 @@ namespace type
         this->set(dst);
     }
 
-    void Image::toGrayScale() 
+    void Image::quantizeGrayScaleImage(int colors)
     {
-        const Mat src = image;
-        Mat dst(src.rows, src.cols, CV_8UC1);
-        for (int row = 0; row < dst.rows; ++row) 
+        if (this->empty()) return;
+
+        if (!this->isGrayScale) {
+            this->toGrayScale();
+        }
+
+        const float bandSize = 256 / colors;
+        const Mat src = this->image;
+        Mat3b dst(src.rows, src.cols);
+        for (int row = 0; row < dst.rows; ++row)
         {
-            for (int col = 0; col < dst.cols; ++col) 
+            for (int col = 0; col < dst.cols; ++col)
             {
                 const Vec3b srcColors = src.at<Vec3b>(row, col);
-                const int blue = srcColors(0);
-                const int green = srcColors(1);
-                const int red = srcColors(2);
+                const int grayValue = srcColors(0);
+                const int quantizedValue = round(grayValue / bandSize) * bandSize;
 
-                dst.at<uchar>(row, col) = (uchar) (0.299 * red + 0.587 * green  + 0.114 * blue);
+                dst.at<Vec3b>(row, col)[0] = quantizedValue;
+                dst.at<Vec3b>(row, col)[1] = quantizedValue;
+                dst.at<Vec3b>(row, col)[2] = quantizedValue;
             }
         }
-        this->set(dst);
+        this->image = dst;
     }
 }
