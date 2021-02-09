@@ -6,7 +6,8 @@
 
 using namespace std;
 
-namespace util {
+namespace util 
+{
 	class FilenameUtil
 	{
 	public:

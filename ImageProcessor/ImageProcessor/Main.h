@@ -4,11 +4,13 @@
 #include "wx/wx.h"
 #include "Image.h"
 #include "FilenameUtil.h"
+#include "cvui.h"
 
 using namespace type;
 using namespace util;
 
-namespace view {
+namespace view 
+{
 	class Main : public wxFrame
 	{
 	public:
@@ -19,6 +21,7 @@ namespace view {
 		wxButton* saveButton = nullptr;
 		wxButton* flipHButton = nullptr;
 		wxButton* flipVButton = nullptr;
+		wxButton* grayButton = nullptr;
 		wxListBox* logListBox = nullptr;
 		wxTextCtrl* imageDimTextCtrl = nullptr;
 		wxFileDialog* fileDialog = nullptr;
@@ -31,6 +34,7 @@ namespace view {
 		void onSaveButtonClick(wxCommandEvent& evt);
 		void onFlipHButtonClick(wxCommandEvent& evt);
 		void onFlipVButtonClick(wxCommandEvent& evt);
+		void onGrayVButtonClick(wxCommandEvent& evt);
 
 		void log(string log);
 		void updateOriginalImageView();

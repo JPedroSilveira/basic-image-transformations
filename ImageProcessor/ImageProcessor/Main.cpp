@@ -1,6 +1,11 @@
-#include "Main.h"
+﻿#include "Main.h"
 
 using namespace cv;
+
+#include <opencv2/opencv.hpp>
+#include "cvui.h" 
+
+#define WINDOW_NAME "CVUI Hello World!" 
 
 namespace view
 {
@@ -9,6 +14,7 @@ namespace view
 		EVT_BUTTON(10002, onSaveButtonClick)
 		EVT_BUTTON(10003, onFlipHButtonClick)
 		EVT_BUTTON(10004, onFlipVButtonClick)
+		EVT_BUTTON(10005, onGrayVButtonClick)
 	wxEND_EVENT_TABLE()
 
 	Main::Main() : wxFrame(nullptr, wxID_ANY, "Image Processor", wxPoint(30,30), wxSize(800,450))
@@ -17,6 +23,7 @@ namespace view
 		saveButton = new wxButton(this, 10002, "Save image", wxPoint(410, 10), wxSize(360, 50));
 		flipHButton = new wxButton(this, 10003, "Flip Horizontally", wxPoint(10, 70), wxSize(175, 30));
 		flipVButton = new wxButton(this, 10004, "Flip Vertically", wxPoint(195, 70), wxSize(175, 30));
+		grayButton = new wxButton(this, 10005, "Gray scale", wxPoint(410, 70), wxSize(175, 30));
 		imageDimTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(10, 110), wxSize(360, 20), wxTE_READONLY);
 		logListBox = new wxListBox(this, wxID_ANY, wxPoint(10, 140), wxSize(760, 250));
 		fileDialog = new wxFileDialog(this, "Select an image", "", "", "JPG files(*.jpg;*.jpeg) | *.jpg;*.jpeg", wxFD_OPEN);
@@ -76,6 +83,7 @@ namespace view
 		processedImageFile->horizontalFlip();
 		updateProcessedImageView();
 		log("Image fliped horizontally");
+		
 		evt.Skip();
 	}
 
@@ -84,6 +92,14 @@ namespace view
 		processedImageFile->verticalFlip();
 		updateProcessedImageView();
 		log("Image fliped vertically");
+		evt.Skip();
+	}
+
+	void Main::onGrayVButtonClick(wxCommandEvent& evt)
+	{
+		processedImageFile->toGrayScale();
+		updateProcessedImageView();
+		log("Gray filter aplied");
 		evt.Skip();
 	}
 

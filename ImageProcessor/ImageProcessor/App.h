@@ -9,7 +9,8 @@
 using namespace cv;
 using namespace view;
 
-namespace app {
+namespace app 
+{
     class App : public wxApp
     {
     public:

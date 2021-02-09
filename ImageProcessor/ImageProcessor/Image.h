@@ -9,7 +9,8 @@
 using namespace std;
 using namespace cv;
 
-namespace type {
+namespace type 
+{
     class Image
     {
     public:
@@ -22,6 +23,7 @@ namespace type {
         void horizontalFlip();
         //flip(src, dst, 0)
         void verticalFlip();
+        void toGrayScale();
     private:
         Mat image;
         void flip(Vec3b (*f)(Mat3b src, Mat3b dst, int row, int col));

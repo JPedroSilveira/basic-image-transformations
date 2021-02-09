@@ -1,6 +1,7 @@
 #include "App.h"
 
-namespace app {
+namespace app 
+{
     wxIMPLEMENT_APP(App);
 
     App::App()
@@ -10,7 +11,8 @@ namespace app {
     App::~App()
     {
     }
-    bool App::OnInit() {
+    bool App::OnInit() 
+    {
         mainFrame = new Main();
         mainFrame->Show();
 
