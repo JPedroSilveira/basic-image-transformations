@@ -21,13 +21,13 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="FilenameUtil.h" />
-    <ClInclude Include="ImageFile.h" />
+    <ClInclude Include="Image.h" />
     <ClInclude Include="Main.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="FilenameUtil.cpp" />
-    <ClCompile Include="ImageFile.cpp" />
+    <ClCompile Include="Image.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

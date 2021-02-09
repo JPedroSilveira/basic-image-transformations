@@ -2,7 +2,7 @@
 
 #include <opencv2/core/utility.hpp>
 #include "wx/wx.h"
-#include "ImageFile.h"
+#include "Image.h"
 #include "FilenameUtil.h"
 
 using namespace type;

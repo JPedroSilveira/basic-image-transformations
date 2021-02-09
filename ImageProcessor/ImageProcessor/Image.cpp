@@ -2,6 +2,16 @@
 
 const string DEFAULT_SAVE_PATH = "C:/Users/55519/Documents/Git/processador-de-imagens/";
 
+Vec3b horizontalFlipFilter(Mat3b src, Mat3b dst, int row, int col)
+{
+    return src(row, src.cols - 1 - col);
+}
+
+Vec3b verticalFlipFilter(Mat3b src, Mat3b dst, int row, int col)
+{
+    return src(src.rows - 1 - row, col);
+}
+
 namespace type {
     void Image::load(string path) {
         if (!path.empty()) {
@@ -29,11 +39,19 @@ namespace type {
     }
 
     void Image::horizontalFlip() {
+        flip(horizontalFlipFilter);
+    }
+
+    void Image::verticalFlip() {
+        flip(verticalFlipFilter);
+    }
+
+    void Image::flip(Vec3b(*func)(Mat3b src, Mat3b dst, int row, int col)) {
         const Mat3b src = image;
         Mat3b dst(src.rows, src.cols);
         for (int row = 0; row < dst.rows; ++row) {
             for (int col = 0; col < dst.cols; ++col) {
-                const Vec3b srcUnit = src(row, src.cols - 1 - col);
+                const Vec3b srcUnit = func(src, dst, row, col);
                 memcpy(&dst(row, col), &srcUnit, sizeof(srcUnit));
             }
         }

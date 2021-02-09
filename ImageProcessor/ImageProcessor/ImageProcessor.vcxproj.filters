@@ -45,11 +45,11 @@
     <ClInclude Include="Main.h">
       <Filter>Arquivos de Cabeçalho\View</Filter>
     </ClInclude>
-    <ClInclude Include="ImageFile.h">
-      <Filter>Arquivos de Cabeçalho\Type</Filter>
-    </ClInclude>
     <ClInclude Include="FilenameUtil.h">
       <Filter>Arquivos de Cabeçalho\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Arquivos de Cabeçalho\Type</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -59,11 +59,11 @@
     <ClCompile Include="Main.cpp">
       <Filter>Arquivos de Origem\View</Filter>
     </ClCompile>
-    <ClCompile Include="ImageFile.cpp">
-      <Filter>Arquivos de Origem\Type</Filter>
-    </ClCompile>
     <ClCompile Include="FilenameUtil.cpp">
       <Filter>Arquivos de Origem\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Arquivos de Origem\Type</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

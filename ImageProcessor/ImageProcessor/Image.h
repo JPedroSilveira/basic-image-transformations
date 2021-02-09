@@ -20,7 +20,10 @@ namespace type {
         bool empty();
         //flip(src, dst, 1)
         void horizontalFlip();
+        //flip(src, dst, 0)
+        void verticalFlip();
     private:
         Mat image;
+        void flip(Vec3b (*f)(Mat3b src, Mat3b dst, int row, int col));
     };
 }

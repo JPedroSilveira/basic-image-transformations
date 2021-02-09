@@ -8,6 +8,7 @@ namespace view
 		EVT_BUTTON(10001, onOpenButtonClick)
 		EVT_BUTTON(10002, onSaveButtonClick)
 		EVT_BUTTON(10003, onFlipHButtonClick)
+		EVT_BUTTON(10004, onFlipVButtonClick)
 	wxEND_EVENT_TABLE()
 
 	Main::Main() : wxFrame(nullptr, wxID_ANY, "Image Processor", wxPoint(30,30), wxSize(800,450))
@@ -80,6 +81,9 @@ namespace view
 
 	void Main::onFlipVButtonClick(wxCommandEvent& evt)
 	{
+		processedImageFile->verticalFlip();
+		updateProcessedImageView();
+		log("Image fliped vertically");
 		evt.Skip();
 	}
 
