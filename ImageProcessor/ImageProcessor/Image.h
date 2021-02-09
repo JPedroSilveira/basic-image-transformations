@@ -10,7 +10,7 @@ using namespace std;
 using namespace cv;
 
 namespace type {
-    class ImageFile
+    class Image
     {
     public:
         void load(string path);
@@ -18,6 +18,8 @@ namespace type {
         Mat get();
         void set(Mat image);
         bool empty();
+        //flip(src, dst, 1)
+        void horizontalFlip();
     private:
         Mat image;
     };

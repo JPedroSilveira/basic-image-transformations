@@ -17,14 +17,26 @@ namespace view {
 	public:
 		wxButton* openButton = nullptr;
 		wxButton* saveButton = nullptr;
+		wxButton* flipHButton = nullptr;
+		wxButton* flipVButton = nullptr;
 		wxListBox* logListBox = nullptr;
+		wxTextCtrl* imageDimTextCtrl = nullptr;
 		wxFileDialog* fileDialog = nullptr;
 		wxDirDialog* dirDialog = nullptr;
-		ImageFile* originalImage = nullptr;
+		Image* originalImageFile = nullptr;
+		Image* processedImageFile = nullptr;
 		FilenameUtil* filenameUtil = nullptr;
 
 		void onOpenButtonClick(wxCommandEvent& evt);
 		void onSaveButtonClick(wxCommandEvent& evt);
+		void onFlipHButtonClick(wxCommandEvent& evt);
+		void onFlipVButtonClick(wxCommandEvent& evt);
+
+		void log(string log);
+		void updateOriginalImageView();
+		void updateProcessedImageView();
+		void loadOriginalImageFromDialog();
+		void loadProcessedImageFromOriginal();
 
 		wxDECLARE_EVENT_TABLE();
 	};
