@@ -29,28 +29,81 @@ namespace view
 		EVT_BUTTON(10007, onShowImagesButtonClick)
 		EVT_BUTTON(10008, onResetButtonClick)
 		EVT_BUTTON(10009, onHistogramButtonClick)
+		EVT_SLIDER(10010, onBrightnessSliderChange)
+		EVT_BUTTON(10011, onBrightnessApplyButtonClick)
+		EVT_SLIDER(10012, onContrastSliderChange)
+		EVT_BUTTON(10013, onContrastApplyButtonClick)
+		EVT_BUTTON(10014, onNegativeButtonClick)
+		EVT_BUTTON(10015, onHistogramEqualizationButtonClick)
+		EVT_BUTTON(10016, onHistogramMatchingButtonClick)
 	wxEND_EVENT_TABLE()
 
 	Main::Main() : wxFrame(nullptr, 10000, "Image Processor", wxPoint(30,30), wxSize(1030,450))
 	{
+		//OPEN & SAVE
 		this->openButton = new wxButton(this, 10001, "Open image", wxPoint(10, 10), wxSize(360, 50));
 		this->saveButton = new wxButton(this, 10002, "Save image", wxPoint(410, 10), wxSize(360, 50));
-		this->flipHButton = new wxButton(this, 10003, "Flip Horizontally", wxPoint(10, 70), wxSize(175, 30));
-		this->flipVButton = new wxButton(this, 10004, "Flip Vertically", wxPoint(195, 70), wxSize(175, 30));
-		this->grayButton = new wxButton(this, 10005, "Gray scale", wxPoint(410, 70), wxSize(175, 30));
-		this->quantizeButton = new wxButton(this, 10006, "Quantize", wxPoint(595, 70), wxSize(175, 30));
-		this->showImagesButton = new wxButton(this, 10007, "Show images", wxPoint(10, 110), wxSize(175, 30));
-		this->resetButton = new wxButton(this, 10008, "Reset image", wxPoint(195, 110), wxSize(175, 30));
-		this->histogramButton = new wxButton(this, 10009, "Histogram", wxPoint(410, 110), wxSize(175, 30));
-		this->imageDimTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(10, 380), wxSize(300, 20), wxTE_READONLY);
-		this->logListBox = new wxListBox(this, wxID_ANY, wxPoint(800, 10), wxSize(200, 390));
-		this->quantizeValueDialog = new wxSingleChoiceDialog(this, "Select a value", "", getQuantizeOptions());
 		this->fileDialog = new wxFileDialog(this, "Select an image", "", "", "JPG files(*.jpg;*.jpeg) | *.jpg;*.jpeg", wxFD_OPEN);
 		this->dirDialog = new wxDirDialog(this, "Select a directory", "");
+
+		//FLIP
+		this->flipHButton = new wxButton(this, 10003, "Flip Horizontally", wxPoint(10, 70), wxSize(175, 30));
+		this->flipVButton = new wxButton(this, 10004, "Flip Vertically", wxPoint(195, 70), wxSize(175, 30));
+
+		//GRAY SCALE
+		this->grayButton = new wxButton(this, 10005, "Gray scale", wxPoint(410, 70), wxSize(175, 30));
+
+		//QUANTIZE
+		this->quantizeButton = new wxButton(this, 10006, "Quantize", wxPoint(595, 70), wxSize(175, 30));
+		this->quantizeValueDialog = new wxSingleChoiceDialog(this, "Select a value", "", getQuantizeOptions());
+
+		//IMAGE CONTROL
+		this->showImagesButton = new wxButton(this, 10007, "Show images", wxPoint(10, 110), wxSize(175, 30));
+		this->resetButton = new wxButton(this, 10008, "Reset image", wxPoint(195, 110), wxSize(175, 30));
+
+		//HISTOGRAM
+		this->histogramButton = new wxButton(this, 10009, "Histogram", wxPoint(410, 110), wxSize(175, 30));
+
+		//BRIGHTNESS
+		this->brightnessStaticBox = new wxStaticBox(this, wxID_ANY, "Brightness", wxPoint(10, 150), wxSize(360, 60));
+		this->brightnessSlider = new wxSlider(this, 10010, 0, -255, +255, wxPoint(20, 170), wxSize(175, 30));
+		this->brightnessTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(195, 172), wxSize(40, 20), wxTE_READONLY);
+		this->brightnessApplyButton = new wxButton(this, 10011, "Apply", wxPoint(245, 168), wxSize(115, 30));
+
+		//CONTRAST
+		this->contrastStaticBox = new wxStaticBox(this, wxID_ANY, "Contrast", wxPoint(10, 220), wxSize(360, 60));
+		this->contrastSlider = new wxSlider(this, 10012, 0, 0, +255, wxPoint(20, 240), wxSize(175, 30));
+		this->contrastTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(195, 242), wxSize(40, 20), wxTE_READONLY);
+		this->contrastApplyButton = new wxButton(this, 10013, "Apply", wxPoint(245, 238), wxSize(115, 30));
+
+		//NEGATIVE
+		this->negativeButton = new wxButton(this, 10014, "Negative", wxPoint(595, 110), wxSize(175, 30));
+
+		//HISTOGRAM EQUALIZATION
+		this->histogramEqualizationButton = new wxButton(this, 10015, "Histogram Equalization", wxPoint(410, 150), wxSize(175, 30));
+
+		//HISTOGRAM MATCHING
+		this->histogramMatchingButton = new wxButton(this, 10016, "Open target image", wxPoint(595, 150), wxSize(175, 30));
+
+		//INFO
+		this->imageDimTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(10, 380), wxSize(300, 20), wxTE_READONLY);
+		this->logListBox = new wxListBox(this, wxID_ANY, wxPoint(800, 10), wxSize(200, 390));
+
+		//IMAGES
 		this->originalImageFile = new Image();
 		this->processedImageFile = new Image();
+		this->targetImageFile = new Image();
+
+		//UTILS
 		this->filenameUtil = new FilenameUtil();
+
+		//INIT
 		this->updateImageDependentComponents();
+		this->cleanBrightnessData();
+		this->cleanContrastData();
+		this->brightnessTextCtrl->Disable();
+		this->contrastTextCtrl->Disable();
+		this->imageDimTextCtrl->Disable();
 	}
 
 	Main::~Main()
@@ -65,9 +118,9 @@ namespace view
 	void Main::onOpenButtonClick(wxCommandEvent& evt)
 	{
 		if (fileDialog->ShowModal() != wxID_CANCEL) {
-			this->loadOriginalImageFromDialog();
+			this->loadImageFromDialog(this->originalImageFile);
 			if (!originalImageFile->isEmpty()) {
-				this->loadProcessedImageFromOriginal();
+				this->loadImageFromDialog(this->processedImageFile);
 				
 				this->updateOriginalImageView();
 				this->updateProcessedImageView();
@@ -141,7 +194,7 @@ namespace view
 			return;
 		}
 
-		this->processedImageFile->toGrayScale();
+		this->processedImageFile->applyGrayScaleFilter();
 		this->updateProcessedImageView();
 		this->log("Gray filter aplied");
 		evt.Skip();
@@ -163,7 +216,7 @@ namespace view
 
 			valueStream >> selectedValue;
 
-			this->processedImageFile->quantizeGrayScaleImage(selectedValue);
+			this->processedImageFile->applyQuantizeFilter(selectedValue);
 			this->updateProcessedImageView();
 			this->log("Quantization applied to grayscale image");
 		}
@@ -205,9 +258,116 @@ namespace view
 			return;
 		}
 
-		this->createHistogram();
+		this->createHistogram("Histogram");
 		this->updateProcessedImageView();
 		this->log("Histogram created");
+		evt.Skip();
+	}
+
+	void Main::onBrightnessSliderChange(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		const int value = this->brightnessSlider->GetValue();
+		this->brightnessTextCtrl->Clear();
+		this->brightnessTextCtrl->WriteText(this->convertNumberToString(value));
+		evt.Skip();
+	}
+
+	void Main::onBrightnessApplyButtonClick(wxCommandEvent& evt) {
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		const int value = this->brightnessSlider->GetValue();
+		this->processedImageFile->applyBrightness(value);
+		this->cleanBrightnessData();
+		this->updateProcessedImageView();
+		this->log("Brightness of " + this->convertNumberToString(value) + " applied");
+		evt.Skip();
+	}
+
+	void Main::onContrastSliderChange(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		const int value = this->contrastSlider->GetValue();
+		this->contrastTextCtrl->Clear();
+		this->contrastTextCtrl->WriteText(this->convertNumberToString(value));
+		evt.Skip();
+	}
+
+	void Main::onContrastApplyButtonClick(wxCommandEvent& evt) {
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		const int value = this->contrastSlider->GetValue();
+		this->processedImageFile->applyBrightness(value);
+		this->cleanContrastData();
+		this->updateProcessedImageView();
+		this->log("Contrast of " + this->convertNumberToString(value) + " applied");
+		evt.Skip();
+	}
+
+	void Main::onNegativeButtonClick(wxCommandEvent& evt) {
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		this->processedImageFile->applyNegativeFilter();
+		this->updateProcessedImageView();
+		this->log("Negative filter applied");
+		evt.Skip();
+	}
+
+	void Main::onHistogramEqualizationButtonClick(wxCommandEvent& evt) {
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		this->showImage("Previous Image", this->processedImageFile->get());
+		this->createHistogram("Previous Histogram");
+		this->processedImageFile->applyHistogramEqualizationFilter();
+		this->createHistogram("Histogram");
+		this->updateProcessedImageView();
+		this->log("Histogram equalization filter applied");
+		evt.Skip();
+	}
+
+	void Main::onHistogramMatchingButtonClick(wxCommandEvent& evt) {
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		if (fileDialog->ShowModal() != wxID_CANCEL) {
+			this->loadImageFromDialog(this->targetImageFile);
+			if (!this->targetImageFile->isEmpty()) {
+				this->processedImageFile->applyGrayScaleFilter();
+				this->targetImageFile->applyGrayScaleFilter();
+				this->processedImageFile->applyHistogramMatchingFilter(this->targetImageFile);
+
+				this->updateProcessedImageView();
+				this->updateTargetImageView();
+				this->log("Histogram matching filter applied");
+			}
+			else
+			{
+				this->log("Error loading image");
+			}
+		}
+
 		evt.Skip();
 	}
 
@@ -217,11 +377,17 @@ namespace view
 		this->logListBox->SetSelection(logListBox->GetCount() - 1);
 	}
 
-	void Main::updateOriginalImageView() {
-		if (originalImageFile->isEmpty()) return;
+	void Main::showImage(string viewName, Mat image)
+	{
+		if (image.empty()) return;
+		imshow(viewName, image);
+	}
 
-		const Mat image = originalImageFile->get();
-		imshow("Original Image", image);
+	void Main::updateOriginalImageView() {
+		if (this->originalImageFile->isEmpty()) return;
+
+		const Mat image = this->originalImageFile->get();
+		this->showImage("Original Image", image);
 
 		const int width = image.size().width;
 		const int height = image.size().height;
@@ -231,20 +397,22 @@ namespace view
 
 	void Main::updateProcessedImageView()
 	{
-		if (processedImageFile->isEmpty()) return;
-		imshow("Processed Image", processedImageFile->get());
+		if (this->processedImageFile->isEmpty()) return;
+
+		this->showImage("Processed Image", this->processedImageFile->get());
 	}
 
-	void Main::loadOriginalImageFromDialog()
+	void Main::updateTargetImageView()
+	{
+		if (this->targetImageFile->isEmpty()) return;
+
+		this->showImage("Target Image", this->targetImageFile->get());
+	}
+
+	void Main::loadImageFromDialog(Image* image)
 	{
 		const std::string image_path = fileDialog->GetPath().ToStdString();
-		this->originalImageFile->load(image_path);
-	}
-
-	void Main::loadProcessedImageFromOriginal()
-	{
-		const Mat image = originalImageFile->get();
-		this->processedImageFile->set(image);
+		image->load(image_path);
 	}
 
 	void Main::updateImageDependentComponents()
@@ -258,6 +426,13 @@ namespace view
 			this->resetButton->Disable();
 			this->showImagesButton->Disable();
 			this->histogramButton->Disable();
+			this->brightnessSlider->Disable();
+			this->brightnessApplyButton->Disable();
+			this->contrastSlider->Disable();
+			this->contrastApplyButton->Disable();
+			this->negativeButton->Disable();
+			this->histogramEqualizationButton->Disable();
+			this->histogramMatchingButton->Disable();
 		} 
 		else
 		{
@@ -269,20 +444,21 @@ namespace view
 			this->resetButton->Enable();
 			this->showImagesButton->Enable();
 			this->histogramButton->Enable();
+			this->brightnessSlider->Enable();
+			this->brightnessApplyButton->Enable();
+			this->contrastSlider->Enable();
+			this->contrastApplyButton->Enable();
+			this->negativeButton->Enable();
+			this->histogramEqualizationButton->Enable();
+			this->histogramMatchingButton->Enable();
 		}
 	}
 
-	void Main::createHistogram()
+	void Main::createHistogram(string viewName)
 	{
-		this->processedImageFile->calculateHistogram();
-		const int* histogram = this->processedImageFile->getHistogram();
-		int hist[256];
-
-		for (int i = 0; i < 256; i++)
-		{
-			hist[i] = histogram[i];
-		}
-
+		int histogram[256];
+		const int maxHistogramValue = this->processedImageFile->calculateHistogram(histogram);
+		
 		// draw the histograms
 		int hist_w = 256; 
 		int hist_h = 256;
@@ -290,27 +466,36 @@ namespace view
 
 		Mat histImage(hist_h, hist_w, CV_8UC1, Scalar(255, 255, 255));
 
-		// find the maximum intensity element from histogram
-		int max = hist[0];
-		for (int i = 1; i < 256; i++) {
-			if (max < hist[i]) {
-				max = hist[i];
-			}
-		}
 
 		// normalize the histogram between 0 and histImage.rows
-		for (int i = 0; i < 256; i++)
-		{
-			hist[i] = ((double)hist[i] / this->processedImageFile->getMaxHistogramValue()) * histImage.rows;
-		}
+		this->processedImageFile->normalizeHistogram(histImage.rows, histogram, maxHistogramValue);
 
 		// draw the intensity line for histogram
 		for (int i = 0; i < 256; i++)
 		{
-			line(histImage, Point(bin_w * (i), hist_h), Point(bin_w * (i), hist_h - hist[i]), Scalar(0, 0, 0), 1, 8, 0);
+			line(histImage, Point(bin_w * (i), hist_h), Point(bin_w * (i), hist_h - histogram[i]), Scalar(0, 0, 0), 1, 8, 0);
 		}
 
 		// display histogram
-		imshow("Histogram", histImage);
+		imshow(viewName, histImage);
+	}
+
+	void Main::cleanBrightnessData() 
+	{
+		this->brightnessSlider->SetValue(0);
+		this->brightnessTextCtrl->Clear();
+		this->brightnessTextCtrl->SetValue("0");
+	}
+
+	void Main::cleanContrastData()
+	{
+		this->contrastSlider->SetValue(0);
+		this->contrastTextCtrl->Clear();
+		this->contrastTextCtrl->SetValue("0");
+	}
+
+	string Main::convertNumberToString(int value)
+	{
+		return  value <= 0 ? to_string(value) : "+" + to_string(value);
 	}
 }

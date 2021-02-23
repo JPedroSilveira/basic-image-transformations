@@ -35,14 +35,26 @@ namespace view
 		wxButton* showImagesButton = nullptr;
 		wxButton* histogramButton = nullptr;
 		wxListBox* logListBox = nullptr;
+		wxSlider* brightnessSlider = nullptr;
+		wxStaticBox* brightnessStaticBox = nullptr;
+		wxTextCtrl* brightnessTextCtrl = nullptr;
+		wxButton* brightnessApplyButton = nullptr;
+		wxSlider* contrastSlider = nullptr;
+		wxStaticBox* contrastStaticBox = nullptr;
+		wxTextCtrl* contrastTextCtrl = nullptr;
+		wxButton* contrastApplyButton = nullptr;
+		wxButton* negativeButton = nullptr;
+		wxButton* histogramEqualizationButton = nullptr;
+		wxButton* histogramMatchingButton = nullptr;
 		wxTextCtrl* imageDimTextCtrl = nullptr;
 		wxSingleChoiceDialog* quantizeValueDialog = nullptr;
 		wxFileDialog* fileDialog = nullptr;
 		wxDirDialog* dirDialog = nullptr;
 		Image* originalImageFile = nullptr;
 		Image* processedImageFile = nullptr;
+		Image* targetImageFile = nullptr;
 		FilenameUtil* filenameUtil = nullptr;
-
+		
 		void onFrameClosed(wxCloseEvent& evt);
 		void onOpenButtonClick(wxCommandEvent& evt);
 		void onSaveButtonClick(wxCommandEvent& evt);
@@ -53,14 +65,25 @@ namespace view
 		void onResetButtonClick(wxCommandEvent& evt);
 		void onShowImagesButtonClick(wxCommandEvent& evt);
 		void onHistogramButtonClick(wxCommandEvent& evt);
+		void onBrightnessSliderChange(wxCommandEvent& evt);
+		void onBrightnessApplyButtonClick(wxCommandEvent& evt);
+		void onContrastSliderChange(wxCommandEvent& evt);
+		void onContrastApplyButtonClick(wxCommandEvent& evt);
+		void onNegativeButtonClick(wxCommandEvent& evt);
+		void onHistogramEqualizationButtonClick(wxCommandEvent& evt);
+		void onHistogramMatchingButtonClick(wxCommandEvent& evt);
 
 		void log(string log);
+		void showImage(string viewName, Mat image);
 		void updateOriginalImageView();
 		void updateProcessedImageView();
-		void loadOriginalImageFromDialog();
-		void loadProcessedImageFromOriginal();
+		void updateTargetImageView();
+		void loadImageFromDialog(Image* image);
 		void updateImageDependentComponents();
-		void createHistogram();
+		void createHistogram(string viewName);
+		void cleanBrightnessData();
+		void cleanContrastData();
+		string convertNumberToString(int value);
 
 		wxDECLARE_EVENT_TABLE();
 	};

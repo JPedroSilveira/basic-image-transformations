@@ -24,16 +24,21 @@ namespace type
         bool isGrayScale();
         void horizontalFlip();
         void verticalFlip();
-        void toGrayScale();
-        void quantizeGrayScaleImage(int colors);
-        void calculateHistogram();
-        int* getHistogram();
-        int getMaxHistogramValue();
+        void applyGrayScaleFilter();
+        void applyQuantizeFilter(int colors);
+        int calculateHistogram(int histogram[256]);
+        void applyBrightness(int value);
+        void applyContrast(int value);
+        void applyNegativeFilter();
+        void applyHistogramEqualizationFilter();
+        void applyHistogramMatchingFilter(Image* target);
+        void normalizeHistogram(int target, int histogram[256], int maxHistogramValue);
+        void calculateCumulativeHistogram(int* cumulativeHistogram, int* histogram);
     private:
         Mat data;
         bool grayScale;
-        int histogram[256];
-        int maxHistogramValue;
-        void flip(Vec3b (*f)(Mat3b src, Mat3b dst, int row, int col));
+        void flip(Vec3b (*func)(Mat3b src, Mat3b dst, int row, int col));
+        int filterNewChannelValue(int value);
+        int getGrayValueFromRGB(int r, int g, int b);
     };
 }
