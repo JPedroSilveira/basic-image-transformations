@@ -66,4 +66,7 @@
       <Filter>Arquivos de Origem\Type</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
 </Project>
