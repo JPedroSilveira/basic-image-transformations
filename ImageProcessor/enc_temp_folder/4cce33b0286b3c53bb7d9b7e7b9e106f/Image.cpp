@@ -653,18 +653,17 @@ namespace type
     {
         if (this->isEmpty()) return;
 
-        const Mat src = this->get();
+        const Mat3b src = this->get();
 
         Mat3b dst(src.rows, src.cols);
 
-        this->applyGrayScaleFilter();
         this->matrixUtil->rotate3X3In90Degrees(filter);
         this->matrixUtil->rotate3X3In90Degrees(filter);
 
         float colorNeighborhood[3][3][3];
         Vec3b neighborhoodChannels[3][3];
         float neighborhoodResult[3][3];
-        int sum;
+        float sum;
 
         for (int row = 1; row < src.rows - 1; row++)
         {
@@ -703,7 +702,7 @@ namespace type
                         }
                     }
 
-                    dst.at<Vec3b>(row, col)(i) = this->filterNewChannelValue(sum);
+                    dst.at<Vec3b>(row, col)(i) = this->filterNewChannelValue(floor(sum));
                 }
             }
         }

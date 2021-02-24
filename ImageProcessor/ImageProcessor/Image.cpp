@@ -653,11 +653,10 @@ namespace type
     {
         if (this->isEmpty()) return;
 
-        const Mat src = this->get();
+        const Mat3b src = this->get();
 
         Mat3b dst(src.rows, src.cols);
 
-        this->applyGrayScaleFilter();
         this->matrixUtil->rotate3X3In90Degrees(filter);
         this->matrixUtil->rotate3X3In90Degrees(filter);
 
@@ -692,7 +691,7 @@ namespace type
 
                 for (int i = 0; i < 3; i++)
                 {
-                    this->matrixUtil->multiply3(filter, colorNeighborhood[i], neighborhoodResult);
+                    this->matrixUtil->multiply3ItemByItem(filter, colorNeighborhood[i], neighborhoodResult);
 
                     sum = 0;
                     for (int x = 0; x < 3; x++)

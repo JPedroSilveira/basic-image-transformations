@@ -515,15 +515,15 @@ namespace view
 		}
 
 		float filter[3][3];
-		filter[0][0] = -1.0;
-		filter[0][1] = -1.0;
-		filter[0][2] = -1.0;
-		filter[1][0] = -1.0;
-		filter[1][1] = 6.0;
-		filter[1][2] = -1.0;
-		filter[2][0] = -1.0;
-		filter[2][1] = -1.0;
-		filter[2][2] = -1.0;
+		filter[0][0] = 0.0625;
+		filter[0][1] = 0.125;
+		filter[0][2] = 0.0625;
+		filter[1][0] = 0.125;
+		filter[1][1] = 0.25;
+		filter[1][2] = 0.125;
+		filter[2][0] = 0.0625;
+		filter[2][1] = 0.125;
+		filter[2][2] = 0.0625;
 
 		this->processedImageFile->applyThreeByThreeMatrixConvolution(filter);
 		this->updateProcessedImageView();
