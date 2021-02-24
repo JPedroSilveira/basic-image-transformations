@@ -55,7 +55,9 @@ namespace view
 		wxButton* zoomOutApplyButton = nullptr;
 		wxTextCtrl* imageDimTextCtrl = nullptr;
 		wxButton* zoomInButton = nullptr;
-		wxButton* rotateButton = nullptr;
+		wxButton* rotateRightButton = nullptr;
+		wxButton* rotateLeftButton = nullptr;
+		wxButton* convolutionButton = nullptr;
 		wxSingleChoiceDialog* quantizeValueDialog = nullptr;
 		wxFileDialog* fileDialog = nullptr;
 		wxDirDialog* dirDialog = nullptr;
@@ -84,8 +86,10 @@ namespace view
 		void onZoomOutXSliderChange(wxCommandEvent& evt);
 		void onZoomOutYSliderChange(wxCommandEvent& evt);
 		void onZoomOutApplyButtonClick(wxCommandEvent& evt);
-		void onZoomInApplyButtonClick(wxCommandEvent& evt);
-		void onRotateApplyButtonClick(wxCommandEvent& evt);
+		void onZoomInButtonClick(wxCommandEvent& evt);
+		void onRotateRightButtonClick(wxCommandEvent& evt);
+		void onRotateLeftButtonClick(wxCommandEvent& evt);
+		void onConvolutionButtonClick(wxCommandEvent& evt);
 
 		void log(string log);
 		void showImage(string viewName, Mat image);

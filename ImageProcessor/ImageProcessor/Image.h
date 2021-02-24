@@ -6,9 +6,11 @@
 #include <opencv2/highgui.hpp>
 #include <iostream>
 #include <cmath>
+#include "MatrixUtil.h"
 
 using namespace std;
 using namespace cv;
+using namespace util;
 
 namespace type 
 {
@@ -37,12 +39,15 @@ namespace type
         void applyEasterEggOne(int row, int column);
         void applyZoomOut(int x, int y);
         void applyZoomIn();
-        void rotate();
+        void rotateRight();
+        void rotateLeft();
+        void applyThreeByThreeMatrixConvolution(float matrix[3][3]);
     private:
         Mat data;
         bool grayScale;
         void flip(Vec3b (*func)(Mat3b src, Mat3b dst, int row, int col));
         int filterNewChannelValue(int value);
         int getGrayValueFromRGB(int r, int g, int b);
+        MatrixUtil* matrixUtil = nullptr;
     };
 }

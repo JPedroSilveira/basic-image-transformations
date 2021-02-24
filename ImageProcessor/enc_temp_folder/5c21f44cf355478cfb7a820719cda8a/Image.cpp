@@ -664,7 +664,7 @@ namespace type
         float colorNeighborhood[3][3][3];
         Vec3b neighborhoodChannels[3][3];
         float neighborhoodResult[3][3];
-        float sum;
+        int sum;
 
         for (int row = 1; row < src.rows - 1; row++)
         {
@@ -703,7 +703,7 @@ namespace type
                         }
                     }
 
-                    dst.at<Vec3b>(row, col)(i) = this->filterNewChannelValue(floor(sum));
+                    dst.at<Vec3b>(row, col)(i) = this->filterNewChannelValue(sum);
                 }
             }
         }

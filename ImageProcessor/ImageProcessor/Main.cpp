@@ -39,8 +39,10 @@ namespace view
 		EVT_SLIDER(10017, onZoomOutXSliderChange)
 		EVT_SLIDER(10018, onZoomOutYSliderChange)
 		EVT_BUTTON(10019, onZoomOutApplyButtonClick)
-		EVT_BUTTON(10020, onZoomInApplyButtonClick)
-		EVT_BUTTON(10021, onRotateApplyButtonClick)
+		EVT_BUTTON(10020, onZoomInButtonClick)
+		EVT_BUTTON(10021, onRotateRightButtonClick)
+		EVT_BUTTON(10022, onRotateLeftButtonClick)
+		EVT_BUTTON(10023, onConvolutionButtonClick)
 	wxEND_EVENT_TABLE()
 
 	Main::Main() : wxFrame(nullptr, 10000, "Image Processor", wxPoint(30,30), wxSize(1030,500))
@@ -102,7 +104,11 @@ namespace view
 		this->histogramMatchingButton = new wxButton(this, 10016, "Histogram Matching", wxPoint(595, 150), wxSize(175, 30));
 
 		//ROTATE
-		this->rotateButton = new wxButton(this, 10021, "Rotate", wxPoint(595, 230), wxSize(175, 30));
+		this->rotateRightButton = new wxButton(this, 10021, "Rotate Right", wxPoint(410, 270), wxSize(175, 30));
+		this->rotateLeftButton = new wxButton(this, 10022, "Rotate Left", wxPoint(595, 270), wxSize(175, 30));
+
+		//CONVOLUTION
+		this->convolutionButton = new wxButton(this, 10023, "Convolution", wxPoint(595, 230), wxSize(175, 30));
 
 		//INFO
 		this->imageDimTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(10, 430), wxSize(300, 20), wxTE_READONLY);
@@ -143,7 +149,9 @@ namespace view
 		this->componentsWithImageDependencie.push_back(this->zoomOutYSlider);
 		this->componentsWithImageDependencie.push_back(this->zoomOutApplyButton);
 		this->componentsWithImageDependencie.push_back(this->zoomInButton);
-		this->componentsWithImageDependencie.push_back(this->rotateButton);
+		this->componentsWithImageDependencie.push_back(this->rotateRightButton);
+		this->componentsWithImageDependencie.push_back(this->rotateLeftButton);
+		this->componentsWithImageDependencie.push_back(this->convolutionButton);
 		this->updateImageDependentComponents();
 
 		// INIT COMPONENTS DATA
@@ -277,9 +285,9 @@ namespace view
 			return;
 		}
 
+		this->logListBox->Clear();
 		this->processedImageFile->set(originalImageFile->get());
 		this->updateProcessedImageView();
-		this->log("Reset");
 		evt.Skip();
 	}
 
@@ -460,7 +468,7 @@ namespace view
 		evt.Skip();
 	}
 
-	void Main::onZoomInApplyButtonClick(wxCommandEvent& evt)
+	void Main::onZoomInButtonClick(wxCommandEvent& evt)
 	{
 		if (processedImageFile->isEmpty()) {
 			evt.Skip();
@@ -473,16 +481,53 @@ namespace view
 		evt.Skip();
 	}
 
-	void Main::onRotateApplyButtonClick(wxCommandEvent& evt)
+	void Main::onRotateRightButtonClick(wxCommandEvent& evt)
 	{
 		if (processedImageFile->isEmpty()) {
 			evt.Skip();
 			return;
 		}
 
-		this->processedImageFile->rotate();
+		this->processedImageFile->rotateRight();
 		this->updateProcessedImageView();
-		this->log("90 degrees rotation applied");
+		this->log("90 degrees right rotation applied");
+		evt.Skip();
+	}
+
+	void Main::onRotateLeftButtonClick(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		this->processedImageFile->rotateLeft();
+		this->updateProcessedImageView();
+		this->log("90 degrees left rotation applied");
+		evt.Skip();
+	}
+
+	void Main::onConvolutionButtonClick(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		float filter[3][3];
+		filter[0][0] = -1.0;
+		filter[0][1] = -1.0;
+		filter[0][2] = -1.0;
+		filter[1][0] = -1.0;
+		filter[1][1] = 6.0;
+		filter[1][2] = -1.0;
+		filter[2][0] = -1.0;
+		filter[2][1] = -1.0;
+		filter[2][2] = -1.0;
+
+		this->processedImageFile->applyThreeByThreeMatrixConvolution(filter);
+		this->updateProcessedImageView();
+		this->log("Convolution applied");
 		evt.Skip();
 	}
 

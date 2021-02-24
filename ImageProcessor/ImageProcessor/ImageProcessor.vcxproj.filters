@@ -51,6 +51,9 @@
     <ClInclude Include="Image.h">
       <Filter>Arquivos de Cabeçalho\Type</Filter>
     </ClInclude>
+    <ClInclude Include="MatrixUtil.h">
+      <Filter>Arquivos de Cabeçalho\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -64,6 +67,9 @@
     </ClCompile>
     <ClCompile Include="Image.cpp">
       <Filter>Arquivos de Origem\Type</Filter>
+    </ClCompile>
+    <ClCompile Include="MatrixUtil.cpp">
+      <Filter>Arquivos de Origem\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
