@@ -24,7 +24,8 @@ namespace view
 	public:
 		Main();
 		~Main();
-	public:
+	private:
+		vector<wxWindowBase*> componentsWithImageDependencie;
 		wxButton* openButton = nullptr;
 		wxButton* saveButton = nullptr;
 		wxButton* flipHButton = nullptr;
@@ -53,7 +54,8 @@ namespace view
 		wxTextCtrl* zoomOutYTextCtrl = nullptr;
 		wxButton* zoomOutApplyButton = nullptr;
 		wxTextCtrl* imageDimTextCtrl = nullptr;
-		wxButton* zoomInApplyButton = nullptr;
+		wxButton* zoomInButton = nullptr;
+		wxButton* rotateButton = nullptr;
 		wxSingleChoiceDialog* quantizeValueDialog = nullptr;
 		wxFileDialog* fileDialog = nullptr;
 		wxDirDialog* dirDialog = nullptr;
@@ -81,8 +83,9 @@ namespace view
 		void onHistogramMatchingButtonClick(wxCommandEvent& evt);
 		void onZoomOutXSliderChange(wxCommandEvent& evt);
 		void onZoomOutYSliderChange(wxCommandEvent& evt);
-		void onZoomOutApplyClick(wxCommandEvent& evt);
-		void onZoomInApplyClick(wxCommandEvent& evt);
+		void onZoomOutApplyButtonClick(wxCommandEvent& evt);
+		void onZoomInApplyButtonClick(wxCommandEvent& evt);
+		void onRotateApplyButtonClick(wxCommandEvent& evt);
 
 		void log(string log);
 		void showImage(string viewName, Mat image);

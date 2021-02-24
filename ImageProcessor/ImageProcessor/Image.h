@@ -37,6 +37,7 @@ namespace type
         void applyEasterEggOne(int row, int column);
         void applyZoomOut(int x, int y);
         void applyZoomIn();
+        void rotate();
     private:
         Mat data;
         bool grayScale;

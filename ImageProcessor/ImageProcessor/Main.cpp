@@ -38,8 +38,9 @@ namespace view
 		EVT_BUTTON(10016, onHistogramMatchingButtonClick)
 		EVT_SLIDER(10017, onZoomOutXSliderChange)
 		EVT_SLIDER(10018, onZoomOutYSliderChange)
-		EVT_BUTTON(10019, onZoomOutApplyClick)
-		EVT_BUTTON(10020, onZoomInApplyClick)
+		EVT_BUTTON(10019, onZoomOutApplyButtonClick)
+		EVT_BUTTON(10020, onZoomInApplyButtonClick)
+		EVT_BUTTON(10021, onRotateApplyButtonClick)
 	wxEND_EVENT_TABLE()
 
 	Main::Main() : wxFrame(nullptr, 10000, "Image Processor", wxPoint(30,30), wxSize(1030,500))
@@ -89,7 +90,7 @@ namespace view
 		this->zoomOutApplyButton = new wxButton(this, 10019, "Apply", wxPoint(245, 328), wxSize(115, 30));
 
 		//ZOOM IN
-		this->zoomInApplyButton = new wxButton(this, 10020, "Zoom In", wxPoint(410, 230), wxSize(175, 30));
+		this->zoomInButton = new wxButton(this, 10020, "Zoom In", wxPoint(410, 230), wxSize(175, 30));
 
 		//NEGATIVE
 		this->negativeButton = new wxButton(this, 10014, "Negative", wxPoint(595, 110), wxSize(175, 30));
@@ -99,6 +100,9 @@ namespace view
 
 		//HISTOGRAM MATCHING
 		this->histogramMatchingButton = new wxButton(this, 10016, "Histogram Matching", wxPoint(595, 150), wxSize(175, 30));
+
+		//ROTATE
+		this->rotateButton = new wxButton(this, 10021, "Rotate", wxPoint(595, 230), wxSize(175, 30));
 
 		//INFO
 		this->imageDimTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(10, 430), wxSize(300, 20), wxTE_READONLY);
@@ -112,16 +116,40 @@ namespace view
 		//UTILS
 		this->filenameUtil = new FilenameUtil();
 
-		//INIT
-		this->updateImageDependentComponents();
-		this->cleanBrightnessData();
-		this->cleanContrastData();
-		this->cleanZoomOutData();
+		//COMPONENTS WITHOUT ENABLE OPTION
 		this->brightnessTextCtrl->Disable();
 		this->contrastTextCtrl->Disable();
 		this->imageDimTextCtrl->Disable();
 		this->zoomOutXTextCtrl->Disable();
 		this->zoomOutYTextCtrl->Disable();
+
+		//COMPONENTS THAT NEEDS AN IMAGE TO BE ENABLED
+		this->componentsWithImageDependencie.push_back(this->saveButton);
+		this->componentsWithImageDependencie.push_back(this->flipHButton);
+		this->componentsWithImageDependencie.push_back(this->flipVButton);
+		this->componentsWithImageDependencie.push_back(this->grayButton);
+		this->componentsWithImageDependencie.push_back(this->quantizeButton);
+		this->componentsWithImageDependencie.push_back(this->resetButton);
+		this->componentsWithImageDependencie.push_back(this->showImagesButton);
+		this->componentsWithImageDependencie.push_back(this->histogramButton);
+		this->componentsWithImageDependencie.push_back(this->brightnessSlider);
+		this->componentsWithImageDependencie.push_back(this->brightnessApplyButton);
+		this->componentsWithImageDependencie.push_back(this->contrastSlider);
+		this->componentsWithImageDependencie.push_back(this->contrastApplyButton);
+		this->componentsWithImageDependencie.push_back(this->negativeButton);
+		this->componentsWithImageDependencie.push_back(this->histogramEqualizationButton);
+		this->componentsWithImageDependencie.push_back(this->histogramMatchingButton);
+		this->componentsWithImageDependencie.push_back(this->zoomOutXSlider);
+		this->componentsWithImageDependencie.push_back(this->zoomOutYSlider);
+		this->componentsWithImageDependencie.push_back(this->zoomOutApplyButton);
+		this->componentsWithImageDependencie.push_back(this->zoomInButton);
+		this->componentsWithImageDependencie.push_back(this->rotateButton);
+		this->updateImageDependentComponents();
+
+		// INIT COMPONENTS DATA
+		this->cleanBrightnessData();
+		this->cleanContrastData();
+		this->cleanZoomOutData();
 	}
 
 	Main::~Main()
@@ -343,7 +371,7 @@ namespace view
 			return;
 		}
 
-		this->processedImageFile->applyZoomIn();
+		this->processedImageFile->applyNegativeFilter();
 		this->updateProcessedImageView();
 		this->log("Negative filter applied");
 		evt.Skip();
@@ -416,7 +444,7 @@ namespace view
 		evt.Skip();
 	}
 
-	void Main::onZoomOutApplyClick(wxCommandEvent& evt)
+	void Main::onZoomOutApplyButtonClick(wxCommandEvent& evt)
 	{
 		if (processedImageFile->isEmpty()) {
 			evt.Skip();
@@ -432,7 +460,7 @@ namespace view
 		evt.Skip();
 	}
 
-	void Main::onZoomInApplyClick(wxCommandEvent& evt)
+	void Main::onZoomInApplyButtonClick(wxCommandEvent& evt)
 	{
 		if (processedImageFile->isEmpty()) {
 			evt.Skip();
@@ -442,6 +470,19 @@ namespace view
 		this->processedImageFile->applyZoomIn();
 		this->updateProcessedImageView();
 		this->log("Zoom in (x2) applied");
+		evt.Skip();
+	}
+
+	void Main::onRotateApplyButtonClick(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		this->processedImageFile->rotate();
+		this->updateProcessedImageView();
+		this->log("90 degrees rotation applied");
 		evt.Skip();
 	}
 
@@ -492,47 +533,17 @@ namespace view
 	void Main::updateImageDependentComponents()
 	{
 		if (this->processedImageFile->isEmpty()) {
-			this->saveButton->Disable();
-			this->flipHButton->Disable();
-			this->flipVButton->Disable();
-			this->grayButton->Disable();
-			this->quantizeButton->Disable();
-			this->resetButton->Disable();
-			this->showImagesButton->Disable();
-			this->histogramButton->Disable();
-			this->brightnessSlider->Disable();
-			this->brightnessApplyButton->Disable();
-			this->contrastSlider->Disable();
-			this->contrastApplyButton->Disable();
-			this->negativeButton->Disable();
-			this->histogramEqualizationButton->Disable();
-			this->histogramMatchingButton->Disable();
-			this->zoomOutXSlider->Disable();
-			this->zoomOutYSlider->Disable();
-			this->zoomOutApplyButton->Disable();
-			this->zoomInApplyButton->Disable();
+			for (int i = 0; i < this->componentsWithImageDependencie.size(); i++)
+			{
+				this->componentsWithImageDependencie[i]->Disable();
+			}
 		} 
 		else
 		{
-			this->saveButton->Enable();
-			this->flipHButton->Enable();
-			this->flipVButton->Enable();
-			this->grayButton->Enable();
-			this->quantizeButton->Enable();
-			this->resetButton->Enable();
-			this->showImagesButton->Enable();
-			this->histogramButton->Enable();
-			this->brightnessSlider->Enable();
-			this->brightnessApplyButton->Enable();
-			this->contrastSlider->Enable();
-			this->contrastApplyButton->Enable();
-			this->negativeButton->Enable();
-			this->histogramEqualizationButton->Enable();
-			this->histogramMatchingButton->Enable();
-			this->zoomOutXSlider->Enable();
-			this->zoomOutYSlider->Enable();
-			this->zoomOutApplyButton->Enable();
-			this->zoomInApplyButton->Enable();
+			for (int i = 0; i < this->componentsWithImageDependencie.size(); i++)
+			{
+				this->componentsWithImageDependencie[i]->Enable();
+			}
 		}
 	}
 

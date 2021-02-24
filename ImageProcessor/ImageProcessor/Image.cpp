@@ -588,4 +588,27 @@ namespace type
 
         this->set(dst);
     }
+
+    void Image::rotate()
+    {
+        if (this->isEmpty()) return;
+
+        const Mat src = this->get();
+
+        Mat3b dst(src.cols, src.rows);
+
+        for (int row = 0; row < src.rows; row++)
+        {
+            for (int col = 0; col < src.cols; col++)
+            {
+                const Vec3b srcColor = src.at<Vec3b>(row, col);
+
+                dst.at<Vec3b>(col, src.rows - 1 - row)[2] = srcColor(2);
+                dst.at<Vec3b>(col, src.rows - 1 - row)[1] = srcColor(1);
+                dst.at<Vec3b>(col, src.rows - 1 - row)[0] = srcColor(0);
+            }
+        }
+
+        this->set(dst);
+    }
 }
