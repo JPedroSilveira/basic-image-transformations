@@ -46,7 +46,14 @@ namespace view
 		wxButton* negativeButton = nullptr;
 		wxButton* histogramEqualizationButton = nullptr;
 		wxButton* histogramMatchingButton = nullptr;
+		wxSlider* zoomOutXSlider = nullptr;
+		wxSlider* zoomOutYSlider = nullptr;
+		wxStaticBox* zoomOutStaticBox = nullptr;
+		wxTextCtrl* zoomOutXTextCtrl = nullptr;
+		wxTextCtrl* zoomOutYTextCtrl = nullptr;
+		wxButton* zoomOutApplyButton = nullptr;
 		wxTextCtrl* imageDimTextCtrl = nullptr;
+		wxButton* zoomInApplyButton = nullptr;
 		wxSingleChoiceDialog* quantizeValueDialog = nullptr;
 		wxFileDialog* fileDialog = nullptr;
 		wxDirDialog* dirDialog = nullptr;
@@ -72,6 +79,10 @@ namespace view
 		void onNegativeButtonClick(wxCommandEvent& evt);
 		void onHistogramEqualizationButtonClick(wxCommandEvent& evt);
 		void onHistogramMatchingButtonClick(wxCommandEvent& evt);
+		void onZoomOutXSliderChange(wxCommandEvent& evt);
+		void onZoomOutYSliderChange(wxCommandEvent& evt);
+		void onZoomOutApplyClick(wxCommandEvent& evt);
+		void onZoomInApplyClick(wxCommandEvent& evt);
 
 		void log(string log);
 		void showImage(string viewName, Mat image);
@@ -83,7 +94,8 @@ namespace view
 		void createHistogram(string viewName);
 		void cleanBrightnessData();
 		void cleanContrastData();
-		string convertNumberToString(int value);
+		void cleanZoomOutData();
+		string convertNumberToString(int value, string symbol = "");
 
 		wxDECLARE_EVENT_TABLE();
 	};

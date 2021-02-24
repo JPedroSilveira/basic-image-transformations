@@ -294,6 +294,8 @@ namespace type
 
     void Image::applyHistogramMatchingFilter(Image* target)
     {
+        if (this->isEmpty()) return;
+
         const Mat src = this->get();
         Mat3b dst(src.rows, src.cols);
         const int normalizeRows = 256;
@@ -370,5 +372,220 @@ namespace type
         {
             cumulativeHistogram[i] = cumulativeHistogram[i - 1] + histogramAlpha * histogram[i];
         }
+    }
+
+    void Image::applyEasterEggOne(int rows, int columns)
+    {
+        if (this->isEmpty()) return;
+
+        const Mat src = this->get();
+        Mat3b dst(rows, columns);
+
+        vector<vector<int>> redMatrix(rows, vector<int>(columns));
+        vector<vector<int>> greenMatrix(rows, vector<int>(columns));
+        vector<vector<int>> blueMatrix(rows, vector<int>(columns));
+        vector<int> count(rows);
+
+        for (int row = 0; row < src.rows; row = row + rows)
+        {
+            for (int column = 0; column < src.cols; column = column + columns)
+            {
+                for (int dstRow = 0; dstRow < dst.rows && dstRow + row < src.rows; dstRow++)
+                {
+                    for (int dstColumn = 0; dstColumn < dst.cols && dstColumn + column < src.cols; dstColumn++)
+                    {
+                        const Vec3b srcColors = src.at<Vec3b>(row + dstRow, column + dstColumn);
+                        const int r = srcColors(2);
+                        const int g = srcColors(1);
+                        const int b = srcColors(0);
+
+                        redMatrix[dstRow][dstColumn] = redMatrix[dstRow][dstColumn] + r;
+                        greenMatrix[dstRow][dstColumn] = greenMatrix[dstRow][dstColumn] + g;
+                        blueMatrix[dstRow][dstColumn] = blueMatrix[dstRow][dstColumn] + b;
+                    }
+                    count[dstRow]++;
+                }
+            }
+        }
+
+        for (int row = 0; row < dst.rows; row++)
+        {
+            for (int col = 0; col < dst.cols; col++)
+            {
+                const int newR = redMatrix[row][col] / count[row];
+                const int newG = greenMatrix[row][col] / count[row];
+                const int newB = blueMatrix[row][col] / count[row];
+
+                dst.at<Vec3b>(row, col)[2] = this->filterNewChannelValue(newR);
+                dst.at<Vec3b>(row, col)[1] = this->filterNewChannelValue(newG);
+                dst.at<Vec3b>(row, col)[0] = this->filterNewChannelValue(newB);
+            }
+        }
+
+        this->set(dst);
+    }
+
+    void Image::applyZoomOut(int x, int y)
+    {
+        if (this->isEmpty()) return;
+
+        const Mat src = this->get();
+        const int newXSize = floor(src.rows / x);
+        const int newYSize = floor(src.cols / y);
+        if (newXSize < 2) return;
+        if (newYSize < 2) return;
+
+        Mat3b dst(newXSize, newYSize);
+
+        int srcCol;
+        int srcRow = 0;
+        for (int dstRow = 0; dstRow < dst.rows; dstRow++)
+        {
+            srcCol = 0;
+            for (int dstCol = 0; dstCol < dst.cols; dstCol++)
+            {
+                int rValue = 0;
+                int gValue = 0;
+                int bValue = 0;
+                int count = 0;
+                for (int xi = 0; xi < x && (srcRow + xi) < src.rows; xi++)
+                {
+                    for (int yi = 0; yi < y && (srcCol + yi) < src.cols; yi++)
+                    {
+                        const Vec3b srcColors = src.at<Vec3b>(srcRow + xi, srcCol + yi);
+
+                        rValue += srcColors(2);
+                        gValue += srcColors(1);
+                        bValue += srcColors(0);
+                        count++;
+                    }
+                }
+                srcCol+=x;
+
+                if (count > 0) {
+                    dst.at<Vec3b>(dstRow, dstCol)[2] = floor(rValue / count);
+                    dst.at<Vec3b>(dstRow, dstCol)[1] = floor(gValue / count);
+                    dst.at<Vec3b>(dstRow, dstCol)[0] = floor(bValue / count);
+                }
+            }
+            srcRow+=y;
+
+            if (srcRow > src.rows) {
+                srcRow = 0;
+            }
+        }
+
+        this->set(dst);
+    }
+
+    void Image::applyZoomIn()
+    {
+        if (this->isEmpty()) return;
+
+        const Mat src = this->get();
+        const int newXSize = src.rows * 2 - 1;
+        const int newYSize = src.cols * 2 - 1;
+
+        if (newXSize > 4000) return;
+        if (newYSize > 4000) return;
+
+        Mat3b dst(newXSize, newYSize);
+
+        int srcRow = 0;
+        int srcCol = 0;
+
+        for (int dstRow = 0; dstRow < dst.rows; dstRow++) // First step with existent rows
+        {
+            if (dstRow % 2 != 0) { // First step analizes only original rows
+                srcRow++;
+                continue;
+            };
+            srcCol = 0;
+
+            for (int dstCol = 0; dstCol < dst.cols; dstCol++)
+            {
+                if (dstCol % 2 == 0) // In original columns
+                {
+                    const Vec3b srcColors = src.at<Vec3b>(srcRow, srcCol);
+
+                    dst.at<Vec3b>(dstRow, dstCol)[2] = srcColors(2);
+                    dst.at<Vec3b>(dstRow, dstCol)[1] = srcColors(1);
+                    dst.at<Vec3b>(dstRow, dstCol)[0] = srcColors(0);
+                        
+                    srcCol++;
+                }
+                else // Between original columns
+                {
+                    const Vec3b srcLeftColors = src.at<Vec3b>(srcRow, srcCol);
+                    const Vec3b srcRightColors = src.at<Vec3b>(srcRow, srcCol - 1);
+
+                    dst.at<Vec3b>(dstRow, dstCol)[2] = (srcLeftColors(2) + srcRightColors(2))/2;
+                    dst.at<Vec3b>(dstRow, dstCol)[1] = (srcLeftColors(1) + srcRightColors(1))/2;
+                    dst.at<Vec3b>(dstRow, dstCol)[0] = (srcLeftColors(0) + srcRightColors(0))/2;
+                }
+            }
+        }
+
+        srcRow = 0;
+        for (int dstRow = 0; dstRow < dst.rows; dstRow++) // Second step fills new empty rows between original pixels
+        {
+            if (dstRow % 2 == 0) { // Second step analizes only new rows
+                srcRow++;
+                continue;
+            };
+            srcCol = 0;
+
+            for (int dstCol = 0; dstCol < dst.cols; dstCol++)
+            {
+                if (dstCol % 2 != 0) // Second analize only new rows where top and bottom pixels are from original image
+                {
+                    srcCol++;
+                    continue;
+                }
+
+                const Vec3b srcTopColors = src.at<Vec3b>(srcRow - 1, srcCol);
+                const Vec3b srcBottomColors = src.at<Vec3b>(srcRow, srcCol);
+
+                dst.at<Vec3b>(dstRow, dstCol)[2] = (srcTopColors(2) + srcBottomColors(2)) / 2;
+                dst.at<Vec3b>(dstRow, dstCol)[1] = (srcTopColors(1) + srcBottomColors(1)) / 2;
+                dst.at<Vec3b>(dstRow, dstCol)[0] = (srcTopColors(0) + srcBottomColors(0)) / 2;
+            }
+            if (dstRow % 2 == 0) {
+                srcRow++;
+            }
+            srcCol = 0;
+        }
+
+        for (int dstRow = 0; dstRow < dst.rows; dstRow++) // Third step fills new empty rows between generated pixels
+        {
+            if (dstRow % 2 == 0)  continue; // Third step analizes only new rows
+
+            for (int dstCol = 0; dstCol < dst.cols; dstCol++)
+            {
+                if (dstCol % 2 == 0) continue; // Third analize only new rows where top and bottom pixels are generated pixels
+
+                const Vec3b dstTopColors = dst.at<Vec3b>(dstRow, dstCol - 1);
+                const Vec3b dstBottomColors = dst.at<Vec3b>(dstRow, dstCol + 1);
+                const Vec3b dstLeftColors = dst.at<Vec3b>(dstRow - 1, dstCol);
+                const Vec3b dstRightColors = dst.at<Vec3b>(dstRow + 1, dstCol);
+                const Vec3b dstTopLeftColors = dst.at<Vec3b>(dstRow - 1, dstCol - 1);
+                const Vec3b dstTopRightColors = dst.at<Vec3b>(dstRow - 1, dstCol + 1);
+                const Vec3b dstBottomLeftColors = dst.at<Vec3b>(dstRow + 1, dstCol - 1);
+                const Vec3b dstBottomRightColors = dst.at<Vec3b>(dstRow + 1, dstCol + 1);
+
+                dst.at<Vec3b>(dstRow, dstCol)[2] = (dstTopColors(2) + dstBottomColors(2) + dstLeftColors(2) + dstRightColors(2) +
+                    dstTopLeftColors(2) + dstTopRightColors(2) + dstBottomLeftColors(2) + dstBottomRightColors(2)) / 8;
+                dst.at<Vec3b>(dstRow, dstCol)[1] = (dstTopColors(1) + dstBottomColors(1) + dstLeftColors(1) + dstRightColors(1) +
+                    dstTopLeftColors(1) + dstTopRightColors(1) + dstBottomLeftColors(1) + dstBottomRightColors(1)) / 8;
+                dst.at<Vec3b>(dstRow, dstCol)[0] = (dstTopColors(0) + dstBottomColors(0) + dstLeftColors(0) + dstRightColors(0) +
+                    dstTopLeftColors(0) + dstTopRightColors(0) + dstBottomLeftColors(0) + dstBottomRightColors(0)) / 8;
+            }
+            if (dstRow % 2 == 0) {
+                srcRow++;
+            }
+            srcCol = 0;
+        }
+
+        this->set(dst);
     }
 }

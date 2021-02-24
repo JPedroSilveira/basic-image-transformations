@@ -36,9 +36,13 @@ namespace view
 		EVT_BUTTON(10014, onNegativeButtonClick)
 		EVT_BUTTON(10015, onHistogramEqualizationButtonClick)
 		EVT_BUTTON(10016, onHistogramMatchingButtonClick)
+		EVT_SLIDER(10017, onZoomOutXSliderChange)
+		EVT_SLIDER(10018, onZoomOutYSliderChange)
+		EVT_BUTTON(10019, onZoomOutApplyClick)
+		EVT_BUTTON(10020, onZoomInApplyClick)
 	wxEND_EVENT_TABLE()
 
-	Main::Main() : wxFrame(nullptr, 10000, "Image Processor", wxPoint(30,30), wxSize(1030,450))
+	Main::Main() : wxFrame(nullptr, 10000, "Image Processor", wxPoint(30,30), wxSize(1030,500))
 	{
 		//OPEN & SAVE
 		this->openButton = new wxButton(this, 10001, "Open image", wxPoint(10, 10), wxSize(360, 50));
@@ -47,8 +51,8 @@ namespace view
 		this->dirDialog = new wxDirDialog(this, "Select a directory", "");
 
 		//FLIP
-		this->flipHButton = new wxButton(this, 10003, "Flip Horizontally", wxPoint(10, 70), wxSize(175, 30));
-		this->flipVButton = new wxButton(this, 10004, "Flip Vertically", wxPoint(195, 70), wxSize(175, 30));
+		this->flipHButton = new wxButton(this, 10003, "Flip Horizontally", wxPoint(410, 190), wxSize(175, 30));
+		this->flipVButton = new wxButton(this, 10004, "Flip Vertically", wxPoint(595, 190), wxSize(175, 30));
 
 		//GRAY SCALE
 		this->grayButton = new wxButton(this, 10005, "Gray scale", wxPoint(410, 70), wxSize(175, 30));
@@ -66,15 +70,26 @@ namespace view
 
 		//BRIGHTNESS
 		this->brightnessStaticBox = new wxStaticBox(this, wxID_ANY, "Brightness", wxPoint(10, 150), wxSize(360, 60));
-		this->brightnessSlider = new wxSlider(this, 10010, 0, -255, +255, wxPoint(20, 170), wxSize(175, 30));
+		this->brightnessSlider = new wxSlider(this, 10010, 0, -255, 255, wxPoint(20, 170), wxSize(175, 30));
 		this->brightnessTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(195, 172), wxSize(40, 20), wxTE_READONLY);
 		this->brightnessApplyButton = new wxButton(this, 10011, "Apply", wxPoint(245, 168), wxSize(115, 30));
 
 		//CONTRAST
 		this->contrastStaticBox = new wxStaticBox(this, wxID_ANY, "Contrast", wxPoint(10, 220), wxSize(360, 60));
-		this->contrastSlider = new wxSlider(this, 10012, 0, 0, +255, wxPoint(20, 240), wxSize(175, 30));
+		this->contrastSlider = new wxSlider(this, 10012, 0, 0, 255, wxPoint(20, 240), wxSize(175, 30));
 		this->contrastTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(195, 242), wxSize(40, 20), wxTE_READONLY);
 		this->contrastApplyButton = new wxButton(this, 10013, "Apply", wxPoint(245, 238), wxSize(115, 30));
+
+		//ZOOM OUT
+		this->zoomOutStaticBox = new wxStaticBox(this, wxID_ANY, "Zoom out", wxPoint(10, 290), wxSize(360, 100));
+		this->zoomOutXSlider = new wxSlider(this, 10017, 0, 1, 20, wxPoint(20, 310), wxSize(175, 30));
+		this->zoomOutYSlider = new wxSlider(this, 10018, 0, 1, 20, wxPoint(20, 350), wxSize(175, 30));
+		this->zoomOutXTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(195, 312), wxSize(40, 20), wxTE_READONLY);
+		this->zoomOutYTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(195, 352), wxSize(40, 20), wxTE_READONLY);
+		this->zoomOutApplyButton = new wxButton(this, 10019, "Apply", wxPoint(245, 328), wxSize(115, 30));
+
+		//ZOOM IN
+		this->zoomInApplyButton = new wxButton(this, 10020, "Zoom In", wxPoint(410, 230), wxSize(175, 30));
 
 		//NEGATIVE
 		this->negativeButton = new wxButton(this, 10014, "Negative", wxPoint(595, 110), wxSize(175, 30));
@@ -83,11 +98,11 @@ namespace view
 		this->histogramEqualizationButton = new wxButton(this, 10015, "Histogram Equalization", wxPoint(410, 150), wxSize(175, 30));
 
 		//HISTOGRAM MATCHING
-		this->histogramMatchingButton = new wxButton(this, 10016, "Open target image", wxPoint(595, 150), wxSize(175, 30));
+		this->histogramMatchingButton = new wxButton(this, 10016, "Histogram Matching", wxPoint(595, 150), wxSize(175, 30));
 
 		//INFO
-		this->imageDimTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(10, 380), wxSize(300, 20), wxTE_READONLY);
-		this->logListBox = new wxListBox(this, wxID_ANY, wxPoint(800, 10), wxSize(200, 390));
+		this->imageDimTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(10, 430), wxSize(300, 20), wxTE_READONLY);
+		this->logListBox = new wxListBox(this, wxID_ANY, wxPoint(800, 10), wxSize(200, 440));
 
 		//IMAGES
 		this->originalImageFile = new Image();
@@ -101,9 +116,12 @@ namespace view
 		this->updateImageDependentComponents();
 		this->cleanBrightnessData();
 		this->cleanContrastData();
+		this->cleanZoomOutData();
 		this->brightnessTextCtrl->Disable();
 		this->contrastTextCtrl->Disable();
 		this->imageDimTextCtrl->Disable();
+		this->zoomOutXTextCtrl->Disable();
+		this->zoomOutYTextCtrl->Disable();
 	}
 
 	Main::~Main()
@@ -273,11 +291,12 @@ namespace view
 
 		const int value = this->brightnessSlider->GetValue();
 		this->brightnessTextCtrl->Clear();
-		this->brightnessTextCtrl->WriteText(this->convertNumberToString(value));
+		this->brightnessTextCtrl->WriteText(this->convertNumberToString(value, "+"));
 		evt.Skip();
 	}
 
-	void Main::onBrightnessApplyButtonClick(wxCommandEvent& evt) {
+	void Main::onBrightnessApplyButtonClick(wxCommandEvent& evt) 
+	{
 		if (processedImageFile->isEmpty()) {
 			evt.Skip();
 			return;
@@ -287,7 +306,7 @@ namespace view
 		this->processedImageFile->applyBrightness(value);
 		this->cleanBrightnessData();
 		this->updateProcessedImageView();
-		this->log("Brightness of " + this->convertNumberToString(value) + " applied");
+		this->log("Brightness of " + this->convertNumberToString(value, "+") + " applied");
 		evt.Skip();
 	}
 
@@ -300,7 +319,7 @@ namespace view
 
 		const int value = this->contrastSlider->GetValue();
 		this->contrastTextCtrl->Clear();
-		this->contrastTextCtrl->WriteText(this->convertNumberToString(value));
+		this->contrastTextCtrl->WriteText(this->convertNumberToString(value, "+"));
 		evt.Skip();
 	}
 
@@ -314,7 +333,7 @@ namespace view
 		this->processedImageFile->applyBrightness(value);
 		this->cleanContrastData();
 		this->updateProcessedImageView();
-		this->log("Contrast of " + this->convertNumberToString(value) + " applied");
+		this->log("Contrast of " + this->convertNumberToString(value, "+") + " applied");
 		evt.Skip();
 	}
 
@@ -324,7 +343,7 @@ namespace view
 			return;
 		}
 
-		this->processedImageFile->applyNegativeFilter();
+		this->processedImageFile->applyZoomIn();
 		this->updateProcessedImageView();
 		this->log("Negative filter applied");
 		evt.Skip();
@@ -350,7 +369,7 @@ namespace view
 			evt.Skip();
 			return;
 		}
-
+		
 		if (fileDialog->ShowModal() != wxID_CANCEL) {
 			this->loadImageFromDialog(this->targetImageFile);
 			if (!this->targetImageFile->isEmpty()) {
@@ -368,6 +387,61 @@ namespace view
 			}
 		}
 
+		evt.Skip();
+	}
+
+	void Main::onZoomOutXSliderChange(wxCommandEvent& evt) 
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		const int value = this->zoomOutXSlider->GetValue();
+		this->zoomOutXTextCtrl->Clear();
+		this->zoomOutXTextCtrl->WriteText(this->convertNumberToString(value, "x/"));
+		evt.Skip();
+	}
+
+	void Main::onZoomOutYSliderChange(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		const int value = this->zoomOutYSlider->GetValue();
+		this->zoomOutYTextCtrl->Clear();
+		this->zoomOutYTextCtrl->WriteText(this->convertNumberToString(value, "y/"));
+		evt.Skip();
+	}
+
+	void Main::onZoomOutApplyClick(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		const int x = this->zoomOutXSlider->GetValue();
+		const int y = this->zoomOutYSlider->GetValue();
+		this->processedImageFile->applyZoomOut(x,y);
+		this->cleanZoomOutData();
+		this->updateProcessedImageView();
+		this->log("Zoom Out of x: " + this->convertNumberToString(x) + " and y: " + this->convertNumberToString(y) + " applied");
+		evt.Skip();
+	}
+
+	void Main::onZoomInApplyClick(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+
+		this->processedImageFile->applyZoomIn();
+		this->updateProcessedImageView();
+		this->log("Zoom in (x2) applied");
 		evt.Skip();
 	}
 
@@ -433,6 +507,10 @@ namespace view
 			this->negativeButton->Disable();
 			this->histogramEqualizationButton->Disable();
 			this->histogramMatchingButton->Disable();
+			this->zoomOutXSlider->Disable();
+			this->zoomOutYSlider->Disable();
+			this->zoomOutApplyButton->Disable();
+			this->zoomInApplyButton->Disable();
 		} 
 		else
 		{
@@ -451,6 +529,10 @@ namespace view
 			this->negativeButton->Enable();
 			this->histogramEqualizationButton->Enable();
 			this->histogramMatchingButton->Enable();
+			this->zoomOutXSlider->Enable();
+			this->zoomOutYSlider->Enable();
+			this->zoomOutApplyButton->Enable();
+			this->zoomInApplyButton->Enable();
 		}
 	}
 
@@ -494,8 +576,18 @@ namespace view
 		this->contrastTextCtrl->SetValue("0");
 	}
 
-	string Main::convertNumberToString(int value)
+	void Main::cleanZoomOutData()
 	{
-		return  value <= 0 ? to_string(value) : "+" + to_string(value);
+		this->zoomOutXSlider->SetValue(1);
+		this->zoomOutYSlider->SetValue(1);
+		this->zoomOutXTextCtrl->Clear();
+		this->zoomOutXTextCtrl->SetValue("x/1");
+		this->zoomOutYTextCtrl->Clear();
+		this->zoomOutYTextCtrl->SetValue("y/1");
+	}
+
+	string Main::convertNumberToString(int value, string symbol)
+	{
+		return  value <= 0 ? to_string(value) : symbol + to_string(value);
 	}
 }

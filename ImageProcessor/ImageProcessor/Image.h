@@ -34,6 +34,9 @@ namespace type
         void applyHistogramMatchingFilter(Image* target);
         void normalizeHistogram(int target, int histogram[256], int maxHistogramValue);
         void calculateCumulativeHistogram(int* cumulativeHistogram, int* histogram);
+        void applyEasterEggOne(int row, int column);
+        void applyZoomOut(int x, int y);
+        void applyZoomIn();
     private:
         Mat data;
         bool grayScale;
