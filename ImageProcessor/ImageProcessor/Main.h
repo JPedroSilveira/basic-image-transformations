@@ -57,7 +57,24 @@ namespace view
 		wxButton* zoomInButton = nullptr;
 		wxButton* rotateRightButton = nullptr;
 		wxButton* rotateLeftButton = nullptr;
-		wxButton* convolutionButton = nullptr;
+		wxButton* convolutionApplyButton = nullptr;
+		wxStaticBox* convolutionStaticBox = nullptr;
+		wxTextCtrl* convolutionTable00TextCtrl = nullptr;
+		wxTextCtrl* convolutionTable01TextCtrl = nullptr;
+		wxTextCtrl* convolutionTable02TextCtrl = nullptr;
+		wxTextCtrl* convolutionTable10TextCtrl = nullptr;
+		wxTextCtrl* convolutionTable11TextCtrl = nullptr;
+		wxTextCtrl* convolutionTable12TextCtrl = nullptr;
+		wxTextCtrl* convolutionTable20TextCtrl = nullptr;
+		wxTextCtrl* convolutionTable21TextCtrl = nullptr;
+		wxTextCtrl* convolutionTable22TextCtrl = nullptr;
+		wxButton* convolutionGaussianShortcutButton = nullptr;
+		wxButton* convolutionLaplacianShortcutButton = nullptr;
+		wxButton* convolutionHighPassShortcutButton = nullptr;
+		wxButton* convolutionPrewittHxShortcutButton = nullptr;
+		wxButton* convolutionPrewittHyShortcutButton = nullptr;
+		wxButton* convolutionSobelHxShortcutButton = nullptr;
+		wxButton* convolutionSobelHyShortcutButton = nullptr;
 		wxSingleChoiceDialog* quantizeValueDialog = nullptr;
 		wxFileDialog* fileDialog = nullptr;
 		wxDirDialog* dirDialog = nullptr;
@@ -89,7 +106,14 @@ namespace view
 		void onZoomInButtonClick(wxCommandEvent& evt);
 		void onRotateRightButtonClick(wxCommandEvent& evt);
 		void onRotateLeftButtonClick(wxCommandEvent& evt);
-		void onConvolutionButtonClick(wxCommandEvent& evt);
+		void onConvolutionApplyButtonClick(wxCommandEvent& evt);
+		void onConvolutionGaussianShortcutButton(wxCommandEvent& evt);
+		void onConvolutionLaplacianShortcutButton(wxCommandEvent& evt);
+		void onConvolutionHighPassShortcutButton(wxCommandEvent& evt);
+		void onConvolutionPrewittHxShortcutButton(wxCommandEvent& evt);
+		void onConvolutionPrewittHyShortcutButton(wxCommandEvent& evt);
+		void onConvolutionSobelHxShortcutButton(wxCommandEvent& evt);
+		void onConvolutionSobelHyShortcutButton(wxCommandEvent& evt);
 
 		void log(string log);
 		void showImage(string viewName, Mat image);
@@ -102,6 +126,7 @@ namespace view
 		void cleanBrightnessData();
 		void cleanContrastData();
 		void cleanZoomOutData();
+		void cleanConvolutionTableData();
 		string convertNumberToString(int value, string symbol = "");
 
 		wxDECLARE_EVENT_TABLE();

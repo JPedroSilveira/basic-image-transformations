@@ -42,7 +42,14 @@ namespace view
 		EVT_BUTTON(10020, onZoomInButtonClick)
 		EVT_BUTTON(10021, onRotateRightButtonClick)
 		EVT_BUTTON(10022, onRotateLeftButtonClick)
-		EVT_BUTTON(10023, onConvolutionButtonClick)
+		EVT_BUTTON(10023, onConvolutionApplyButtonClick)
+		EVT_BUTTON(10024, onConvolutionGaussianShortcutButton)
+		EVT_BUTTON(10025, onConvolutionLaplacianShortcutButton)
+		EVT_BUTTON(10026, onConvolutionHighPassShortcutButton)
+		EVT_BUTTON(10027, onConvolutionPrewittHxShortcutButton)
+		EVT_BUTTON(10028, onConvolutionPrewittHyShortcutButton)
+		EVT_BUTTON(10029, onConvolutionSobelHxShortcutButton)
+		EVT_BUTTON(10030, onConvolutionSobelHyShortcutButton)
 	wxEND_EVENT_TABLE()
 
 	Main::Main() : wxFrame(nullptr, 10000, "Image Processor", wxPoint(30,30), wxSize(1030,500))
@@ -104,15 +111,33 @@ namespace view
 		this->histogramMatchingButton = new wxButton(this, 10016, "Histogram Matching", wxPoint(595, 150), wxSize(175, 30));
 
 		//ROTATE
-		this->rotateRightButton = new wxButton(this, 10021, "Rotate Right", wxPoint(410, 270), wxSize(175, 30));
-		this->rotateLeftButton = new wxButton(this, 10022, "Rotate Left", wxPoint(595, 270), wxSize(175, 30));
+		this->rotateLeftButton = new wxButton(this, 10022, "Rotate Left", wxPoint(410, 270), wxSize(175, 30));
+		this->rotateRightButton = new wxButton(this, 10021, "Rotate Right", wxPoint(595, 270), wxSize(175, 30));
 
 		//CONVOLUTION
-		this->convolutionButton = new wxButton(this, 10023, "Convolution", wxPoint(595, 230), wxSize(175, 30));
+		this->convolutionApplyButton = new wxButton(this, 10023, "Apply", wxPoint(875, 350), wxSize(115, 30));
+		this->convolutionStaticBox = new wxStaticBox(this, wxID_ANY, "Convolution", wxPoint(410, 310), wxSize(590, 100));
+		this->convolutionTable00TextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(430, 330), wxSize(45, 20));
+		this->convolutionTable01TextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(430, 355), wxSize(45, 20));
+		this->convolutionTable02TextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(430, 380), wxSize(45, 20));
+		this->convolutionTable10TextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(480, 330), wxSize(45, 20));
+		this->convolutionTable11TextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(480, 355), wxSize(45, 20));
+		this->convolutionTable12TextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(480, 380), wxSize(45, 20));
+		this->convolutionTable20TextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(530, 330), wxSize(45, 20));
+		this->convolutionTable21TextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(530, 355), wxSize(45, 20));
+		this->convolutionTable22TextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(530, 380), wxSize(45, 20));
+		this->convolutionGaussianShortcutButton = new wxButton(this, 10024, "Gaussian", wxPoint(595, 330), wxSize(80, 20));
+		this->convolutionLaplacianShortcutButton = new wxButton(this, 10025, "Laplacian", wxPoint(595, 355), wxSize(80, 20));
+		this->convolutionHighPassShortcutButton = new wxButton(this, 10026, "High Pass", wxPoint(595, 380), wxSize(80, 20));
+		this->convolutionPrewittHxShortcutButton = new wxButton(this, 10027, "Prewitt Hx", wxPoint(680, 330), wxSize(80, 20));
+		this->convolutionPrewittHyShortcutButton = new wxButton(this, 10028, "Prewitt Hy", wxPoint(680, 355), wxSize(80, 20));
+		this->convolutionSobelHxShortcutButton = new wxButton(this, 10029, "Sobel Hx", wxPoint(680, 380), wxSize(80, 20));
+		this->convolutionSobelHyShortcutButton = new wxButton(this, 10030, "Sobel Hy", wxPoint(765, 330), wxSize(80, 20));
+
 
 		//INFO
 		this->imageDimTextCtrl = new wxTextCtrl(this, wxID_ANY, "", wxPoint(10, 430), wxSize(300, 20), wxTE_READONLY);
-		this->logListBox = new wxListBox(this, wxID_ANY, wxPoint(800, 10), wxSize(200, 440));
+		this->logListBox = new wxListBox(this, wxID_ANY, wxPoint(800, 10), wxSize(200, 290));
 
 		//IMAGES
 		this->originalImageFile = new Image();
@@ -151,13 +176,30 @@ namespace view
 		this->componentsWithImageDependencie.push_back(this->zoomInButton);
 		this->componentsWithImageDependencie.push_back(this->rotateRightButton);
 		this->componentsWithImageDependencie.push_back(this->rotateLeftButton);
-		this->componentsWithImageDependencie.push_back(this->convolutionButton);
+		this->componentsWithImageDependencie.push_back(this->convolutionApplyButton);
+		this->componentsWithImageDependencie.push_back(this->convolutionTable00TextCtrl);
+		this->componentsWithImageDependencie.push_back(this->convolutionTable01TextCtrl);
+		this->componentsWithImageDependencie.push_back(this->convolutionTable02TextCtrl);
+		this->componentsWithImageDependencie.push_back(this->convolutionTable10TextCtrl);
+		this->componentsWithImageDependencie.push_back(this->convolutionTable11TextCtrl);
+		this->componentsWithImageDependencie.push_back(this->convolutionTable12TextCtrl);
+		this->componentsWithImageDependencie.push_back(this->convolutionTable20TextCtrl);
+		this->componentsWithImageDependencie.push_back(this->convolutionTable21TextCtrl);
+		this->componentsWithImageDependencie.push_back(this->convolutionTable22TextCtrl);
+		this->componentsWithImageDependencie.push_back(this->convolutionGaussianShortcutButton);
+		this->componentsWithImageDependencie.push_back(this->convolutionLaplacianShortcutButton);
+		this->componentsWithImageDependencie.push_back(this->convolutionHighPassShortcutButton);
+		this->componentsWithImageDependencie.push_back(this->convolutionPrewittHxShortcutButton);
+		this->componentsWithImageDependencie.push_back(this->convolutionPrewittHyShortcutButton);
+		this->componentsWithImageDependencie.push_back(this->convolutionSobelHxShortcutButton);
+		this->componentsWithImageDependencie.push_back(this->convolutionSobelHyShortcutButton);
 		this->updateImageDependentComponents();
 
 		// INIT COMPONENTS DATA
 		this->cleanBrightnessData();
 		this->cleanContrastData();
 		this->cleanZoomOutData();
+		this->cleanConvolutionTableData();
 	}
 
 	Main::~Main()
@@ -507,27 +549,161 @@ namespace view
 		evt.Skip();
 	}
 
-	void Main::onConvolutionButtonClick(wxCommandEvent& evt)
+	void Main::onConvolutionApplyButtonClick(wxCommandEvent& evt)
 	{
 		if (processedImageFile->isEmpty()) {
 			evt.Skip();
 			return;
 		}
 
-		float filter[3][3];
-		filter[0][0] = 0.0625;
-		filter[0][1] = 0.125;
-		filter[0][2] = 0.0625;
-		filter[1][0] = 0.125;
-		filter[1][1] = 0.25;
-		filter[1][2] = 0.125;
-		filter[2][0] = 0.0625;
-		filter[2][1] = 0.125;
-		filter[2][2] = 0.0625;
+		try {
+			float filter[3][3];
+			filter[0][0] = stof(this->convolutionTable00TextCtrl->GetValue().ToStdString());
+			filter[0][1] = stof(this->convolutionTable01TextCtrl->GetValue().ToStdString());
+			filter[0][2] = stof(this->convolutionTable02TextCtrl->GetValue().ToStdString());
+			filter[1][0] = stof(this->convolutionTable10TextCtrl->GetValue().ToStdString());
+			filter[1][1] = stof(this->convolutionTable11TextCtrl->GetValue().ToStdString());
+			filter[1][2] = stof(this->convolutionTable12TextCtrl->GetValue().ToStdString());
+			filter[2][0] = stof(this->convolutionTable20TextCtrl->GetValue().ToStdString());
+			filter[2][1] = stof(this->convolutionTable21TextCtrl->GetValue().ToStdString());
+			filter[2][2] = stof(this->convolutionTable22TextCtrl->GetValue().ToStdString());
 
-		this->processedImageFile->applyThreeByThreeMatrixConvolution(filter);
-		this->updateProcessedImageView();
-		this->log("Convolution applied");
+			this->processedImageFile->applyThreeByThreeMatrixConvolution(filter);
+			this->updateProcessedImageView();
+			this->log("Convolution applied");
+		}
+		catch(...)
+		{
+			this->cleanConvolutionTableData();
+			this->log("Error: Invalid convolution values");
+		}
+
+		evt.Skip();
+	}
+
+	void Main::onConvolutionGaussianShortcutButton(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+		this->convolutionTable00TextCtrl->SetValue("0.0625");
+		this->convolutionTable01TextCtrl->SetValue("0.125");
+		this->convolutionTable02TextCtrl->SetValue("0.0625");
+		this->convolutionTable10TextCtrl->SetValue("0.125");
+		this->convolutionTable11TextCtrl->SetValue("0.25");
+		this->convolutionTable12TextCtrl->SetValue("0.125");
+		this->convolutionTable20TextCtrl->SetValue("0.0625");
+		this->convolutionTable21TextCtrl->SetValue("0.125");
+		this->convolutionTable22TextCtrl->SetValue("0.0625");
+		evt.Skip();
+	}
+
+	void Main::onConvolutionLaplacianShortcutButton(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+		this->convolutionTable00TextCtrl->SetValue("0");
+		this->convolutionTable01TextCtrl->SetValue("-1");
+		this->convolutionTable02TextCtrl->SetValue("0");
+		this->convolutionTable10TextCtrl->SetValue("-1");
+		this->convolutionTable11TextCtrl->SetValue("4");
+		this->convolutionTable12TextCtrl->SetValue("-1");
+		this->convolutionTable20TextCtrl->SetValue("0");
+		this->convolutionTable21TextCtrl->SetValue("-1");
+		this->convolutionTable22TextCtrl->SetValue("0");
+		evt.Skip();
+	}
+
+	void Main::onConvolutionHighPassShortcutButton(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+		this->convolutionTable00TextCtrl->SetValue("-1");
+		this->convolutionTable01TextCtrl->SetValue("-1");
+		this->convolutionTable02TextCtrl->SetValue("-1");
+		this->convolutionTable10TextCtrl->SetValue("-1");
+		this->convolutionTable11TextCtrl->SetValue("8");
+		this->convolutionTable12TextCtrl->SetValue("-1");
+		this->convolutionTable20TextCtrl->SetValue("-1");
+		this->convolutionTable21TextCtrl->SetValue("-1");
+		this->convolutionTable22TextCtrl->SetValue("-1");
+		evt.Skip();
+	}
+
+	void Main::onConvolutionPrewittHxShortcutButton(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+		this->convolutionTable00TextCtrl->SetValue("-1");
+		this->convolutionTable01TextCtrl->SetValue("-1");
+		this->convolutionTable02TextCtrl->SetValue("-1");
+		this->convolutionTable10TextCtrl->SetValue("0");
+		this->convolutionTable11TextCtrl->SetValue("0");
+		this->convolutionTable12TextCtrl->SetValue("0");
+		this->convolutionTable20TextCtrl->SetValue("1");
+		this->convolutionTable21TextCtrl->SetValue("1");
+		this->convolutionTable22TextCtrl->SetValue("1");
+		evt.Skip();
+	}
+
+	void Main::onConvolutionPrewittHyShortcutButton(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+		this->convolutionTable00TextCtrl->SetValue("-1");
+		this->convolutionTable01TextCtrl->SetValue("0");
+		this->convolutionTable02TextCtrl->SetValue("1");
+		this->convolutionTable10TextCtrl->SetValue("-1");
+		this->convolutionTable11TextCtrl->SetValue("0");
+		this->convolutionTable12TextCtrl->SetValue("1");
+		this->convolutionTable20TextCtrl->SetValue("-1");
+		this->convolutionTable21TextCtrl->SetValue("0");
+		this->convolutionTable22TextCtrl->SetValue("1");
+		evt.Skip();
+	}
+
+	void Main::onConvolutionSobelHxShortcutButton(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+		this->convolutionTable00TextCtrl->SetValue("-1");
+		this->convolutionTable01TextCtrl->SetValue("-2");
+		this->convolutionTable02TextCtrl->SetValue("-1");
+		this->convolutionTable10TextCtrl->SetValue("0");
+		this->convolutionTable11TextCtrl->SetValue("0");
+		this->convolutionTable12TextCtrl->SetValue("0");
+		this->convolutionTable20TextCtrl->SetValue("1");
+		this->convolutionTable21TextCtrl->SetValue("2");
+		this->convolutionTable22TextCtrl->SetValue("1");
+		evt.Skip();
+	}
+
+	void Main::onConvolutionSobelHyShortcutButton(wxCommandEvent& evt)
+	{
+		if (processedImageFile->isEmpty()) {
+			evt.Skip();
+			return;
+		}
+		this->convolutionTable00TextCtrl->SetValue("-1");
+		this->convolutionTable01TextCtrl->SetValue("0");
+		this->convolutionTable02TextCtrl->SetValue("1");
+		this->convolutionTable10TextCtrl->SetValue("-2");
+		this->convolutionTable11TextCtrl->SetValue("0");
+		this->convolutionTable12TextCtrl->SetValue("2");
+		this->convolutionTable20TextCtrl->SetValue("-1");
+		this->convolutionTable21TextCtrl->SetValue("0");
+		this->convolutionTable22TextCtrl->SetValue("1");
 		evt.Skip();
 	}
 
@@ -640,6 +816,28 @@ namespace view
 		this->zoomOutXTextCtrl->SetValue("x/1");
 		this->zoomOutYTextCtrl->Clear();
 		this->zoomOutYTextCtrl->SetValue("y/1");
+	}
+
+	void Main::cleanConvolutionTableData()
+	{
+		this->convolutionTable00TextCtrl->Clear();
+		this->convolutionTable00TextCtrl->SetValue("0");
+		this->convolutionTable01TextCtrl->Clear();
+		this->convolutionTable01TextCtrl->SetValue("0");
+		this->convolutionTable02TextCtrl->Clear();
+		this->convolutionTable02TextCtrl->SetValue("0");
+		this->convolutionTable10TextCtrl->Clear();
+		this->convolutionTable10TextCtrl->SetValue("0");
+		this->convolutionTable11TextCtrl->Clear();
+		this->convolutionTable11TextCtrl->SetValue("0");
+		this->convolutionTable12TextCtrl->Clear();
+		this->convolutionTable12TextCtrl->SetValue("0");
+		this->convolutionTable20TextCtrl->Clear();
+		this->convolutionTable20TextCtrl->SetValue("0");
+		this->convolutionTable21TextCtrl->Clear();
+		this->convolutionTable21TextCtrl->SetValue("0");
+		this->convolutionTable22TextCtrl->Clear();
+		this->convolutionTable22TextCtrl->SetValue("0");
 	}
 
 	string Main::convertNumberToString(int value, string symbol)
