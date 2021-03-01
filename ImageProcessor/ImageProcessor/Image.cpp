@@ -429,18 +429,6 @@ namespace type
 
     void Image::applyZoomOut(int x, int y)
     {
-        float matrix[3][3];
-        float count = 0.0;
-
-        for (int x = 0; x < 3; x++)
-        {
-            for (int y = 0; y < 3; y++)
-            {
-                matrix[x][y] = count;
-                count++;
-            }
-        }
-
         if (this->isEmpty()) return;
 
         const Mat src = this->get();

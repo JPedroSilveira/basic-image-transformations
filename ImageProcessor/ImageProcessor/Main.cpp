@@ -805,7 +805,7 @@ namespace view
 	{
 		this->contrastSlider->SetValue(0);
 		this->contrastTextCtrl->Clear();
-		this->contrastTextCtrl->SetValue("0");
+		this->contrastTextCtrl->SetValue("1");
 	}
 
 	void Main::cleanZoomOutData()
