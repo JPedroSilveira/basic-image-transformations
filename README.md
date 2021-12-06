@@ -1,7 +1,7 @@
 # Image Processor
 ## Image processor with basic transformations.
 
-## Extern libs:
+## External libs:
 - wxWidgets 3.1.4
 - opencv 4.5.1
 
